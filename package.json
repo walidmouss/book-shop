@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test-redis": "node --loader ts-node/esm src/config/redis.ts"
   },
   "keywords": [],
   "author": "",
