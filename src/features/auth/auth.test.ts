@@ -1,0 +1,428 @@
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { AuthService } from "./auth.service.js";
+import { db } from "../../config/db.js";
+import { users } from "../../db/users.js";
+import { redis, getTokenUserId } from "../../config/redis.js";
+import jwt from "jsonwebtoken";
+import { env } from "../../config/env.js";
+import { eq } from "drizzle-orm";
+
+const authService = new AuthService();
+
+// Helper to clear users table before each test
+async function clearUsers() {
+  await db.delete(users);
+}
+
+// Helper to clear all Redis test tokens
+async function clearRedisTokens() {
+  const keys = await redis.keys("auth:token:*");
+  if (keys.length > 0) {
+    await redis.del(...keys);
+  }
+}
+
+describe("Auth Service", () => {
+  beforeAll(async () => {
+    await clearUsers();
+    await clearRedisTokens();
+  });
+
+  afterAll(async () => {
+    await clearUsers();
+    await clearRedisTokens();
+  });
+
+  beforeEach(async () => {
+    await clearUsers();
+    await clearRedisTokens();
+  });
+
+  describe("register", () => {
+    it("should register a new user", async () => {
+      const result = await authService.register({
+        username: "testuser",
+        email: "test@example.com",
+        password: "password123",
+      });
+
+      expect(result).toHaveProperty("user");
+      expect(result).toHaveProperty("token");
+      expect(result.user.username).toBe("testuser");
+      expect(result.user.email).toBe("test@example.com");
+      expect(result.user).toHaveProperty("id");
+      expect(result.user).not.toHaveProperty("password_hash");
+      expect(typeof result.token).toBe("string");
+    });
+
+    it("should store token in Redis after registration", async () => {
+      const result = await authService.register({
+        username: "redisuser",
+        email: "redis@example.com",
+        password: "password123",
+      });
+
+      const userId = await getTokenUserId(result.token);
+      expect(userId).toBe(result.user.id);
+    });
+
+    it("should hash the password", async () => {
+      const result = await authService.register({
+        username: "hashtest",
+        email: "hash@example.com",
+        password: "mypassword",
+      });
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, result.user.id));
+
+      expect(user.password_hash).not.toBe("mypassword");
+      expect(user.password_hash.length).toBeGreaterThan(20);
+    });
+
+    it("should not allow duplicate username", async () => {
+      await authService.register({
+        username: "duplicate",
+        email: "dup1@example.com",
+        password: "password123",
+      });
+
+      await expect(
+        authService.register({
+          username: "duplicate",
+          email: "dup2@example.com",
+          password: "password123",
+        })
+      ).rejects.toThrow("Username or email already exists");
+    });
+
+    it("should not allow duplicate email", async () => {
+      await authService.register({
+        username: "user1",
+        email: "same@example.com",
+        password: "password123",
+      });
+
+      await expect(
+        authService.register({
+          username: "user2",
+          email: "same@example.com",
+          password: "password123",
+        })
+      ).rejects.toThrow("Username or email already exists");
+    });
+
+    it("should generate valid JWT token", async () => {
+      const result = await authService.register({
+        username: "jwttest",
+        email: "jwt@example.com",
+        password: "password123",
+      });
+
+      const decoded = jwt.verify(result.token, env.JWT_SECRET) as {
+        userId: number;
+      };
+      expect(decoded.userId).toBe(result.user.id);
+    });
+  });
+
+  describe("login", () => {
+    beforeEach(async () => {
+      // Create a test user for login tests
+      await authService.register({
+        username: "loginuser",
+        email: "login@example.com",
+        password: "password123",
+      });
+    });
+
+    it("should login with username", async () => {
+      const result = await authService.login({
+        usernameOrEmail: "loginuser",
+        password: "password123",
+      });
+
+      expect(result).toHaveProperty("user");
+      expect(result).toHaveProperty("token");
+      expect(result.user.username).toBe("loginuser");
+      expect(typeof result.token).toBe("string");
+    });
+
+    it("should login with email", async () => {
+      const result = await authService.login({
+        usernameOrEmail: "login@example.com",
+        password: "password123",
+      });
+
+      expect(result).toHaveProperty("user");
+      expect(result).toHaveProperty("token");
+      expect(result.user.email).toBe("login@example.com");
+      expect(typeof result.token).toBe("string");
+    });
+
+    it("should store token in Redis after login", async () => {
+      const result = await authService.login({
+        usernameOrEmail: "loginuser",
+        password: "password123",
+      });
+
+      const userId = await getTokenUserId(result.token);
+      expect(userId).toBe(result.user.id);
+    });
+
+    it("should fail with wrong password", async () => {
+      await expect(
+        authService.login({
+          usernameOrEmail: "loginuser",
+          password: "wrongpassword",
+        })
+      ).rejects.toThrow("Invalid credentials");
+    });
+
+    it("should fail with non-existent username", async () => {
+      await expect(
+        authService.login({
+          usernameOrEmail: "nonexistent",
+          password: "password123",
+        })
+      ).rejects.toThrow("Invalid credentials");
+    });
+
+    it("should fail with non-existent email", async () => {
+      await expect(
+        authService.login({
+          usernameOrEmail: "nonexistent@example.com",
+          password: "password123",
+        })
+      ).rejects.toThrow("Invalid credentials");
+    });
+
+    it("should generate new token each login", async () => {
+      const result1 = await authService.login({
+        usernameOrEmail: "loginuser",
+        password: "password123",
+      });
+
+      const result2 = await authService.login({
+        usernameOrEmail: "loginuser",
+        password: "password123",
+      });
+
+      expect(result1.token).not.toBe(result2.token);
+    });
+  });
+
+  describe("resetPassword", () => {
+    beforeEach(async () => {
+      // Create a test user for password reset tests
+      await authService.register({
+        username: "resetuser",
+        email: "reset@example.com",
+        password: "oldpassword",
+      });
+    });
+
+    it("should reset password successfully", async () => {
+      const result = await authService.resetPassword({
+        email: "reset@example.com",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+
+      expect(result.message).toBe("Password reset successfully");
+    });
+
+    it("should allow login with new password after reset", async () => {
+      await authService.resetPassword({
+        email: "reset@example.com",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+
+      const result = await authService.login({
+        usernameOrEmail: "reset@example.com",
+        password: "newpassword123",
+      });
+
+      expect(result).toHaveProperty("token");
+      expect(result.user.email).toBe("reset@example.com");
+    });
+
+    it("should not allow login with old password after reset", async () => {
+      await authService.resetPassword({
+        email: "reset@example.com",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+
+      await expect(
+        authService.login({
+          usernameOrEmail: "reset@example.com",
+          password: "oldpassword",
+        })
+      ).rejects.toThrow("Invalid credentials");
+    });
+
+    it("should fail with non-existent email", async () => {
+      await expect(
+        authService.resetPassword({
+          email: "nonexistent@example.com",
+          newPassword: "newpassword123",
+          confirmPassword: "newpassword123",
+        })
+      ).rejects.toThrow("User not found");
+    });
+
+    it("should hash the new password", async () => {
+      await authService.resetPassword({
+        email: "reset@example.com",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, "reset@example.com"));
+
+      expect(user.password_hash).not.toBe("newpassword123");
+      expect(user.password_hash.length).toBeGreaterThan(20);
+    });
+  });
+
+  describe("logout", () => {
+    it("should remove token from Redis", async () => {
+      const registerResult = await authService.register({
+        username: "logoutuser",
+        email: "logout@example.com",
+        password: "password123",
+      });
+
+      // Verify token exists in Redis
+      let userId = await getTokenUserId(registerResult.token);
+      expect(userId).toBe(registerResult.user.id);
+
+      // Logout
+      const result = await authService.logout(registerResult.token);
+      expect(result.message).toBe("Logged out successfully");
+
+      // Verify token no longer exists in Redis
+      userId = await getTokenUserId(registerResult.token);
+      expect(userId).toBeNull();
+    });
+
+    it("should handle logout with non-existent token gracefully", async () => {
+      const result = await authService.logout("nonexistent-token");
+      expect(result.message).toBe("Logged out successfully");
+    });
+
+    it("should invalidate multiple tokens independently", async () => {
+      const user1 = await authService.register({
+        username: "multi1",
+        email: "multi1@example.com",
+        password: "password123",
+      });
+
+      const user2 = await authService.register({
+        username: "multi2",
+        email: "multi2@example.com",
+        password: "password123",
+      });
+
+      // Logout user1
+      await authService.logout(user1.token);
+
+      // Verify user1 token is invalid
+      const userId1 = await getTokenUserId(user1.token);
+      expect(userId1).toBeNull();
+
+      // Verify user2 token is still valid
+      const userId2 = await getTokenUserId(user2.token);
+      expect(userId2).toBe(user2.user.id);
+    });
+  });
+
+  describe("integration", () => {
+    it("should complete full user lifecycle", async () => {
+      // Register
+      const registerResult = await authService.register({
+        username: "lifecycle",
+        email: "lifecycle@example.com",
+        password: "password123",
+      });
+      expect(registerResult.user.username).toBe("lifecycle");
+
+      // Login
+      const loginResult = await authService.login({
+        usernameOrEmail: "lifecycle",
+        password: "password123",
+      });
+      expect(loginResult.token).not.toBe(registerResult.token);
+
+      // Reset password
+      await authService.resetPassword({
+        email: "lifecycle@example.com",
+        newPassword: "newpass456",
+        confirmPassword: "newpass456",
+      });
+
+      // Login with new password
+      const newLoginResult = await authService.login({
+        usernameOrEmail: "lifecycle@example.com",
+        password: "newpass456",
+      });
+      expect(newLoginResult).toHaveProperty("token");
+
+      // Logout
+      await authService.logout(newLoginResult.token);
+      const userId = await getTokenUserId(newLoginResult.token);
+      expect(userId).toBeNull();
+    });
+  });
+});
+
+/*test coverage:
+
+        Register Tests
+        ---------------
+Successfully registers new users
+Stores tokens in Redis
+Hashes passwords securely
+Prevents duplicate usernames
+Prevents duplicate emails
+Generates valid JWT tokens
+
+        Login Tests
+        -----------
+Logs in with username
+Logs in with email
+Stores tokens in Redis after login
+Fails with wrong password
+Fails with non-existent username/email
+Generates new token each login
+
+        Reset Password Tests
+        ---------------------
+Resets password successfully
+Allows login with new password
+Blocks login with old password
+Fails with non-existent email
+Hashes new passwords
+
+        Logout Tests
+        ------------
+Removes token from Redis
+Handles non-existent tokens gracefully
+Invalidates tokens independently
+
+        Integration Test
+        ----------------
+Complete user lifecycle: register → login → reset password → login with new password → logout
+All tests follow the same pattern as user.test.ts with proper setup/cleanup and isolation between tests.
+
+
+
+
+*/

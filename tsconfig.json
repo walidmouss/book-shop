@@ -12,5 +12,5 @@
   "ts-node": {
     "esm": true
   },
-  "exclude": ["drizzle.config.ts"]
+  "exclude": ["drizzle.config.ts", "vitest.config.ts"]
 }
