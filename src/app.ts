@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { userRoutes } from "./features/user/user.routes.js";
+import { profileRoutes } from "./features/profile/profile.routes.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
 
 export const app = new Hono();
@@ -9,5 +9,5 @@ app.get("/", (c) => {
 });
 
 app.route("/auth", authRoutes);
-app.route("/users", userRoutes);
+app.route("/profile", profileRoutes);
 
