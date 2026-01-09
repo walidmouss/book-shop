@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { profileRoutes } from "./features/profile/profile.routes.js";
 import { authRoutes } from "./features/auth/auth.routes.js";
+import { myBooksRoutes } from "./features/myBooks/myBooks.routes.js";
 
 export const app = new Hono();
 
@@ -10,4 +11,4 @@ app.get("/", (c) => {
 
 app.route("/auth", authRoutes);
 app.route("/profile", profileRoutes);
-
+app.route("/myBooks", myBooksRoutes);

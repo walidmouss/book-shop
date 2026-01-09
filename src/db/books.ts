@@ -7,9 +7,9 @@ import {
   timestamp,
   numeric,
 } from "drizzle-orm/pg-core";
-import { authors } from "./authors";
-import { categories } from "./categories";
-import { users } from "./users";
+import { authors } from "./authors.js";
+import { categories } from "./categories.js";
+import { users } from "./users.js";
 import { int } from "zod";
 
 export const books = pgTable("books", {

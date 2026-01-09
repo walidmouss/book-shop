@@ -3,10 +3,13 @@ import { profileService } from "./profile.service.js";
 import { AuthService } from "../auth/auth.service.js";
 import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
+import { books } from "../../db/books.js";
 import { eq } from "drizzle-orm";
 
 // Helper to clear all users
 async function clearUsers() {
+  // Delete books first (they have foreign key to users)
+  await db.delete(books);
   await db.delete(users);
 }
 
