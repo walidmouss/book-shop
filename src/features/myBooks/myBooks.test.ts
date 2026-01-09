@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
 import { myBooksService } from "./myBooks.service.js";
 import { AuthService } from "../auth/auth.service.js";
 import { db } from "../../config/db.js";
@@ -19,6 +19,13 @@ async function clearAllTables() {
 describe("MyBooks Service", () => {
   let testUserId: number;
   let authService: AuthService;
+
+  beforeAll(() => {
+    // Ensure tests only run in test environment
+    if (!process.env.NODE_ENV?.includes("test")) {
+      throw new Error("Tests must run with NODE_ENV=test to avoid data loss");
+    }
+  });
 
   beforeEach(async () => {
     await clearAllTables();
@@ -320,6 +327,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(4);
@@ -333,6 +341,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "House of Horror",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(1);
@@ -345,6 +354,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "House",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(2);
@@ -360,18 +370,21 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "house",
+        sort: "asc",
       });
 
       const result2 = await myBooksService.getMyBooks(testUserId, {
         page: 1,
         limit: 10,
         title: "HOUSE",
+        sort: "asc",
       });
 
       const result3 = await myBooksService.getMyBooks(testUserId, {
         page: 1,
         limit: 10,
         title: "HoUsE",
+        sort: "asc",
       });
 
       expect(result1.data.length).toBe(2);
@@ -384,6 +397,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "NonexistentBook",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(0);
@@ -395,6 +409,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 2,
         title: "",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(2);
@@ -407,6 +422,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 3,
         title: "House",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(2);
@@ -421,6 +437,7 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "  House  ",
+        sort: "asc",
       });
 
       expect(result.data.length).toBe(2);
@@ -450,11 +467,68 @@ describe("MyBooks Service", () => {
         page: 1,
         limit: 10,
         title: "House",
+        sort: "asc",
       });
 
       // Should only find 2 books (Horror and Dragon), not Cards
       expect(result.data.length).toBe(2);
       expect(result.data.every((b) => b.id !== undefined)).toBe(true);
+    });
+
+    it("should sort books A-Z by default", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+      });
+
+      expect(result.data.length).toBe(4);
+      expect(result.data[0].title).toBe("1984");
+      expect(result.data[1].title).toBe("House of Horror");
+      expect(result.data[2].title).toBe("House of the Dragon");
+      expect(result.data[3].title).toBe("The Great Gatsby");
+    });
+
+    it("should sort books Z-A in descending order", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "desc",
+      });
+
+      expect(result.data.length).toBe(4);
+      expect(result.data[0].title).toBe("The Great Gatsby");
+      expect(result.data[1].title).toBe("House of the Dragon");
+      expect(result.data[2].title).toBe("House of Horror");
+      expect(result.data[3].title).toBe("1984");
+    });
+
+    it("should apply sorting with title filter", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "House",
+        sort: "desc",
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.data[0].title).toBe("House of the Dragon");
+      expect(result.data[1].title).toBe("House of Horror");
+    });
+
+    it("should apply sorting with pagination", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 2,
+        title: "",
+        sort: "asc",
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.data[0].title).toBe("1984");
+      expect(result.data[1].title).toBe("House of Horror");
     });
   });
 });

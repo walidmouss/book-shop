@@ -1,4 +1,4 @@
-import { eq, count, ilike, and } from "drizzle-orm";
+import { eq, count, ilike, and, asc, desc } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
@@ -110,6 +110,8 @@ export const myBooksService = {
     const totalBooks = countResult[0]?.count || 0;
 
     // Get paginated books with related data
+    const orderBy =
+      pagination.sort === "desc" ? desc(books.title) : asc(books.title);
     const userBooks = await db
       .select({
         id: books.id,
@@ -124,6 +126,7 @@ export const myBooksService = {
       })
       .from(books)
       .where(and(...whereConditions))
+      .orderBy(orderBy)
       .limit(pagination.limit)
       .offset(offset);
 

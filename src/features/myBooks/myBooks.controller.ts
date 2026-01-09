@@ -48,6 +48,7 @@ export const myBooksController = {
         page: query.page || "1",
         limit: query.limit || "10",
         title: query.title || "",
+        sort: query.sort || "asc",
       });
 
       const result = await myBooksService.getMyBooks(userId, paginationData);
