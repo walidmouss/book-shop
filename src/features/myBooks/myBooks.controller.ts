@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import { ZodError } from "zod";
 import { myBooksService } from "./myBooks.service.js";
-import { createBookSchema } from "./myBooks.schema.js";
+import { createBookSchema, paginationSchema } from "./myBooks.schema.js";
 
 // Helper to format Zod validation errors
 function formatZodError(error: ZodError): string {
@@ -35,6 +35,36 @@ export const myBooksController = {
           error: error.message,
         },
         400
+      );
+    }
+  },
+
+  async getMyBooks(c: Context) {
+    try {
+      const userId = c.get("userId");
+      const query = c.req.query();
+
+      const paginationData = paginationSchema.parse({
+        page: query.page || "1",
+        limit: query.limit || "10",
+      });
+
+      const result = await myBooksService.getMyBooks(userId, paginationData);
+
+      return c.json({
+        success: true,
+        ...result,
+      });
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        return c.json({ error: formatZodError(error) }, 400);
+      }
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        500
       );
     }
   },

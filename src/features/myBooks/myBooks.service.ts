@@ -1,10 +1,10 @@
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
 import { users } from "../../db/users.js";
-import { CreateBookInput } from "./myBooks.schema.js";
+import { CreateBookInput, PaginationInput } from "./myBooks.schema.js";
 
 export const myBooksService = {
   async createBook(userId: number, data: CreateBookInput) {
@@ -90,5 +90,73 @@ export const myBooksService = {
       }
       throw err;
     }
+  },
+
+  async getMyBooks(userId: number, pagination: PaginationInput) {
+    const offset = (pagination.page - 1) * pagination.limit;
+
+    // Get total count of user's books
+    const countResult = await db
+      .select({ count: count() })
+      .from(books)
+      .where(eq(books.creator_id, userId));
+    const totalBooks = countResult[0]?.count || 0;
+
+    // Get paginated books with related data
+    const userBooks = await db
+      .select({
+        id: books.id,
+        title: books.title,
+        description: books.description,
+        price: books.price,
+        thumbnail: books.thumbnail,
+        author_id: books.author_id,
+        category_id: books.category_id,
+        createdAt: books.createdAt,
+        updatedAt: books.updatedAt,
+      })
+      .from(books)
+      .where(eq(books.creator_id, userId))
+      .limit(pagination.limit)
+      .offset(offset);
+
+    // Get author and category names for each book
+    const booksWithDetails = await Promise.all(
+      userBooks.map(async (book) => {
+        const [author] = await db
+          .select()
+          .from(authors)
+          .where(eq(authors.id, book.author_id))
+          .limit(1);
+
+        const [category] = await db
+          .select()
+          .from(categories)
+          .where(eq(categories.id, book.category_id))
+          .limit(1);
+
+        return {
+          id: book.id,
+          title: book.title,
+          description: book.description,
+          price: book.price,
+          thumbnail: book.thumbnail,
+          author: author?.name,
+          category: category?.name,
+          createdAt: book.createdAt,
+          updatedAt: book.updatedAt,
+        };
+      })
+    );
+
+    return {
+      data: booksWithDetails,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        total: totalBooks,
+        totalPages: Math.ceil(totalBooks / pagination.limit),
+      },
+    };
   },
 };

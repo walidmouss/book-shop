@@ -9,3 +9,6 @@ myBooksRoutes.use("*", authMiddleware);
 
 // POST /my-books - Create a new book
 myBooksRoutes.post("/", myBooksController.createBook);
+
+// GET /my-books - Get user's books with pagination
+myBooksRoutes.get("/", myBooksController.getMyBooks);
