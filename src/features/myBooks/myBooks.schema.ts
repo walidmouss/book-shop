@@ -40,6 +40,11 @@ export const paginationSchema = z.object({
     .default("10")
     .transform((val) => parseInt(val, 10))
     .refine((val) => val >= 1 && val <= 100, "Limit must be between 1 and 100"),
+  title: z
+    .string()
+    .optional()
+    .default("")
+    .transform((val) => val.trim()),
 });
 
 export type PaginationInput = z.infer<typeof paginationSchema>;

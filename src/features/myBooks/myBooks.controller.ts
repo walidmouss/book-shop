@@ -47,6 +47,7 @@ export const myBooksController = {
       const paginationData = paginationSchema.parse({
         page: query.page || "1",
         limit: query.limit || "10",
+        title: query.title || "",
       });
 
       const result = await myBooksService.getMyBooks(userId, paginationData);

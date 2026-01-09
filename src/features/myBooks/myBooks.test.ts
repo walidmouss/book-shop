@@ -274,4 +274,187 @@ describe("MyBooks Service", () => {
       expect(author_list.length).toBeGreaterThanOrEqual(2);
     });
   });
+
+  describe("getMyBooks", () => {
+    beforeEach(async () => {
+      // Create multiple books for testing
+      await myBooksService.createBook(testUserId, {
+        title: "House of Horror",
+        description: "A scary book",
+        price: 15.99,
+        category: "Horror",
+        author: "Stephen King",
+        thumbnail: "https://example.com/horror.jpg",
+      });
+
+      await myBooksService.createBook(testUserId, {
+        title: "The Great Gatsby",
+        description: "A classic novel",
+        price: 12.99,
+        category: "Fiction",
+        author: "F. Scott Fitzgerald",
+        thumbnail: "https://example.com/gatsby.jpg",
+      });
+
+      await myBooksService.createBook(testUserId, {
+        title: "House of the Dragon",
+        description: "A fantasy epic",
+        price: 18.99,
+        category: "Fantasy",
+        author: "George R. R. Martin",
+        thumbnail: "https://example.com/dragon.jpg",
+      });
+
+      await myBooksService.createBook(testUserId, {
+        title: "1984",
+        description: "A dystopian novel",
+        price: 14.99,
+        category: "Science Fiction",
+        author: "George Orwell",
+        thumbnail: "https://example.com/1984.jpg",
+      });
+    });
+
+    it("should return all books without title filter", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+      });
+
+      expect(result.data.length).toBe(4);
+      expect(result.pagination.total).toBe(4);
+      expect(result.pagination.page).toBe(1);
+      expect(result.pagination.limit).toBe(10);
+    });
+
+    it("should search by exact title match", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "House of Horror",
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of Horror");
+      expect(result.pagination.total).toBe(1);
+    });
+
+    it("should search by partial title match", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "House",
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.data.some((b) => b.title === "House of Horror")).toBe(true);
+      expect(result.data.some((b) => b.title === "House of the Dragon")).toBe(
+        true
+      );
+      expect(result.pagination.total).toBe(2);
+    });
+
+    it("should search case-insensitively", async () => {
+      const result1 = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "house",
+      });
+
+      const result2 = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "HOUSE",
+      });
+
+      const result3 = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "HoUsE",
+      });
+
+      expect(result1.data.length).toBe(2);
+      expect(result2.data.length).toBe(2);
+      expect(result3.data.length).toBe(2);
+    });
+
+    it("should return empty array for non-matching title", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "NonexistentBook",
+      });
+
+      expect(result.data.length).toBe(0);
+      expect(result.pagination.total).toBe(0);
+    });
+
+    it("should apply pagination with title filter", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 2,
+        title: "",
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.pagination.total).toBe(4);
+      expect(result.pagination.totalPages).toBe(2);
+    });
+
+    it("should return correct pagination data with title filter", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 3,
+        title: "House",
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.pagination.total).toBe(2);
+      expect(result.pagination.totalPages).toBe(1);
+      expect(result.pagination.page).toBe(1);
+      expect(result.pagination.limit).toBe(3);
+    });
+
+    it("should trim whitespace from search title", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "  House  ",
+      });
+
+      expect(result.data.length).toBe(2);
+    });
+
+    it("should return books only for current user", async () => {
+      // Create another user
+      const result2 = await authService.register({
+        username: "testuser2",
+        email: "test2@example.com",
+        password: "password123",
+      });
+      const testUserId2 = result2.user.id;
+
+      // Create a book for the second user
+      await myBooksService.createBook(testUserId2, {
+        title: "House of Cards",
+        description: "A thriller",
+        price: 16.99,
+        category: "Thriller",
+        author: "Other Author",
+        thumbnail: "https://example.com/cards.jpg",
+      });
+
+      // Search for "House" with first user
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "House",
+      });
+
+      // Should only find 2 books (Horror and Dragon), not Cards
+      expect(result.data.length).toBe(2);
+      expect(result.data.every((b) => b.id !== undefined)).toBe(true);
+    });
+  });
 });
