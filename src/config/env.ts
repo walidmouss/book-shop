@@ -1,5 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config(); // loads .env into process.env
+// Load .env.test during test runs; otherwise load .env
+if (process.env.NODE_ENV === "test") {
+  dotenv.config({ path: ".env.test" });
+} else {
+  dotenv.config();
+}
 
 import { z } from "zod";
 

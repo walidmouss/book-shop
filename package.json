@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "cross-env NODE_ENV=test vitest --run",
+    "test:setup": "dotenv -e .env.test -- drizzle-kit push",
     "lint": "eslint .",
     "test-redis": "node --loader ts-node/esm src/config/redis.ts"
   },
