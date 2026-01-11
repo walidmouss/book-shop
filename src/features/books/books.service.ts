@@ -3,7 +3,7 @@ import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
-import { PaginationInput } from "./books.schema.js";
+import { PaginationInput, BookIdInput } from "./books.schema.js";
 
 export const booksService = {
   async listBooks(pagination: PaginationInput) {
@@ -52,5 +52,27 @@ export const booksService = {
         totalPages: Math.ceil(totalBooks / pagination.limit),
       },
     };
+  },
+
+  async getBookDetails(bookId: BookIdInput) {
+    const result = await db
+      .select({
+        id: books.id,
+        title: books.title,
+        description: books.description,
+        price: books.price,
+        thumbnail: books.thumbnail,
+        author: authors.name,
+        category: categories.name,
+        createdAt: books.createdAt,
+        updatedAt: books.updatedAt,
+      })
+      .from(books)
+      .innerJoin(authors, eq(books.author_id, authors.id))
+      .innerJoin(categories, eq(books.category_id, categories.id))
+      .where(eq(books.id, bookId.id))
+      .limit(1);
+
+    return result[0] || null;
   },
 };

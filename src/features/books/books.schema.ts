@@ -16,3 +16,12 @@ export const paginationSchema = z.object({
 });
 
 export type PaginationInput = z.infer<typeof paginationSchema>;
+
+export const bookIdSchema = z.object({
+  id: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => val >= 1, "Book ID must be a positive number"),
+});
+
+export type BookIdInput = z.infer<typeof bookIdSchema>;

@@ -118,3 +118,97 @@ describe("Books listing", () => {
     expect(found?.category).toBe("MetaCat");
   });
 });
+
+describe("Book details", () => {
+  let authService: AuthService;
+  let userId: number;
+
+  beforeAll(() => {
+    if (!process.env.NODE_ENV?.includes("test")) {
+      throw new Error("Tests must run with NODE_ENV=test to avoid data loss");
+    }
+  });
+
+  beforeEach(async () => {
+    await clearAllTables();
+    authService = new AuthService();
+
+    const result = await authService.register({
+      username: "detailsuser",
+      email: "details@example.com",
+      password: "password123",
+    });
+    userId = result.user.id;
+  });
+
+  it("should return book details by ID", async () => {
+    const book = await myBooksService.createBook(userId, {
+      title: "Detailed Book",
+      description: "This is a detailed description",
+      price: 25,
+      category: "Fiction",
+      author: "John Doe",
+      thumbnail: "https://example.com/detailed.jpg",
+    });
+
+    const result = await booksService.getBookDetails({ id: book.id });
+
+    expect(result).toBeDefined();
+    expect(result?.id).toBe(book.id);
+    expect(result?.title).toBe("Detailed Book");
+    expect(result?.description).toBe("This is a detailed description");
+    expect(result?.price).toBe(25);
+    expect(result?.author).toBe("John Doe");
+    expect(result?.category).toBe("Fiction");
+    expect(result?.thumbnail).toBe("https://example.com/detailed.jpg");
+    expect(result?.createdAt).toBeDefined();
+    expect(result?.updatedAt).toBeDefined();
+  });
+
+  it("should return null for non-existent book ID", async () => {
+    const result = await booksService.getBookDetails({ id: 999999 });
+
+    expect(result).toBeNull();
+  });
+
+  it("should include author and category names", async () => {
+    const book = await myBooksService.createBook(userId, {
+      title: "Complete Book",
+      description: "Complete description",
+      price: 30,
+      category: "Science",
+      author: "Jane Smith",
+      thumbnail: "https://example.com/complete.jpg",
+    });
+
+    const result = await booksService.getBookDetails({ id: book.id });
+
+    expect(result).toBeDefined();
+    expect(result?.author).toBe("Jane Smith");
+    expect(result?.category).toBe("Science");
+  });
+
+  it("should return correct data structure", async () => {
+    const book = await myBooksService.createBook(userId, {
+      title: "Structure Test",
+      description: "Testing structure",
+      price: 15,
+      category: "Tech",
+      author: "Test Author",
+      thumbnail: "https://example.com/structure.jpg",
+    });
+
+    const result = await booksService.getBookDetails({ id: book.id });
+
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty("id");
+    expect(result).toHaveProperty("title");
+    expect(result).toHaveProperty("description");
+    expect(result).toHaveProperty("price");
+    expect(result).toHaveProperty("thumbnail");
+    expect(result).toHaveProperty("author");
+    expect(result).toHaveProperty("category");
+    expect(result).toHaveProperty("createdAt");
+    expect(result).toHaveProperty("updatedAt");
+  });
+});

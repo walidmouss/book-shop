@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import { ZodError } from "zod";
 import { booksService } from "./books.service.js";
-import { paginationSchema } from "./books.schema.js";
+import { paginationSchema, bookIdSchema } from "./books.schema.js";
 
 function formatZodError(error: ZodError): string {
   return error.issues
@@ -26,6 +26,42 @@ export const booksController = {
       return c.json({
         success: true,
         ...result,
+      });
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        return c.json({ error: formatZodError(error) }, 400);
+      }
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        500
+      );
+    }
+  },
+
+  async getDetails(c: Context) {
+    try {
+      const bookId = bookIdSchema.parse({
+        id: c.req.param("id"),
+      });
+
+      const book = await booksService.getBookDetails(bookId);
+
+      if (!book) {
+        return c.json(
+          {
+            success: false,
+            error: "Book not found",
+          },
+          404
+        );
+      }
+
+      return c.json({
+        success: true,
+        data: book,
       });
     } catch (error: any) {
       if (error instanceof ZodError) {
