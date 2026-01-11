@@ -157,7 +157,7 @@ describe("Book details", () => {
     expect(result?.id).toBe(book.id);
     expect(result?.title).toBe("Detailed Book");
     expect(result?.description).toBe("This is a detailed description");
-    expect(result?.price).toBe(25);
+    expect(result?.price).toBe("25.00");
     expect(result?.author).toBe("John Doe");
     expect(result?.category).toBe("Fiction");
     expect(result?.thumbnail).toBe("https://example.com/detailed.jpg");
