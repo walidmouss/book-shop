@@ -221,84 +221,6 @@ describe("Auth Service", () => {
     });
   });
 
-  describe("resetPassword", () => {
-    beforeEach(async () => {
-      // Create a test user for password reset tests
-      await authService.register({
-        username: "resetuser",
-        email: "reset@example.com",
-        password: "oldpassword",
-      });
-    });
-
-    it("should reset password successfully", async () => {
-      const result = await authService.resetPassword({
-        email: "reset@example.com",
-        newPassword: "newpassword123",
-        confirmPassword: "newpassword123",
-      });
-
-      expect(result.message).toBe("Password reset successfully");
-    });
-
-    it("should allow login with new password after reset", async () => {
-      await authService.resetPassword({
-        email: "reset@example.com",
-        newPassword: "newpassword123",
-        confirmPassword: "newpassword123",
-      });
-
-      const result = await authService.login({
-        usernameOrEmail: "reset@example.com",
-        password: "newpassword123",
-      });
-
-      expect(result).toHaveProperty("token");
-      expect(result.user.email).toBe("reset@example.com");
-    });
-
-    it("should not allow login with old password after reset", async () => {
-      await authService.resetPassword({
-        email: "reset@example.com",
-        newPassword: "newpassword123",
-        confirmPassword: "newpassword123",
-      });
-
-      await expect(
-        authService.login({
-          usernameOrEmail: "reset@example.com",
-          password: "oldpassword",
-        })
-      ).rejects.toThrow("Invalid credentials");
-    });
-
-    it("should fail with non-existent email", async () => {
-      await expect(
-        authService.resetPassword({
-          email: "nonexistent@example.com",
-          newPassword: "newpassword123",
-          confirmPassword: "newpassword123",
-        })
-      ).rejects.toThrow("User not found");
-    });
-
-    it("should hash the new password", async () => {
-      await authService.resetPassword({
-        email: "reset@example.com",
-        newPassword: "newpassword123",
-        confirmPassword: "newpassword123",
-      });
-
-      const [user] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, "reset@example.com"));
-
-      expect(user.password_hash).not.toBe("newpassword123");
-      expect(user.password_hash.length).toBeGreaterThan(20);
-    });
-  });
-
   describe("logout", () => {
     it("should remove token from Redis", async () => {
       const registerResult = await authService.register({
@@ -422,23 +344,9 @@ describe("Auth Service", () => {
       });
       expect(loginResult.token).not.toBe(registerResult.token);
 
-      // Reset password
-      await authService.resetPassword({
-        email: "lifecycle@example.com",
-        newPassword: "newpass456",
-        confirmPassword: "newpass456",
-      });
-
-      // Login with new password
-      const newLoginResult = await authService.login({
-        usernameOrEmail: "lifecycle@example.com",
-        password: "newpass456",
-      });
-      expect(newLoginResult).toHaveProperty("token");
-
       // Logout
-      await authService.logout(newLoginResult.token);
-      const userId = await getTokenUserId(newLoginResult.token);
+      await authService.logout(loginResult.token);
+      const userId = await getTokenUserId(loginResult.token);
       expect(userId).toBeNull();
     });
   });
@@ -464,13 +372,12 @@ Fails with wrong password
 Fails with non-existent username/email
 Generates new token each login
 
-        Reset Password Tests
+        Forgot Password Tests
         ---------------------
-Resets password successfully
-Allows login with new password
-Blocks login with old password
-Fails with non-existent email
-Hashes new passwords
+Returns success message for valid email
+Returns success message for non-existent email (security)
+Stores OTP in Redis for valid user
+Uses static OTP 123456
 
         Logout Tests
         ------------
@@ -480,7 +387,7 @@ Invalidates tokens independently
 
         Integration Test
         ----------------
-Complete user lifecycle: register → login → reset password → login with new password → logout
+Complete user lifecycle: register → login → logout
 All tests follow the same pattern as user.test.ts with proper setup/cleanup and isolation between tests.
 
 

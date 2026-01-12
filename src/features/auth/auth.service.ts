@@ -8,7 +8,6 @@ import { storeToken, deleteToken, storeOTP } from "../../config/redis.js";
 import type {
   RegisterInput,
   LoginInput,
-  ResetPasswordInput,
   ForgotPasswordInput,
 } from "./auth.schema.js";
 
@@ -111,30 +110,6 @@ export class AuthService {
       },
       token,
     };
-  }
-
-  async resetPassword(data: ResetPasswordInput) {
-    // Find user by email
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, data.email))
-      .limit(1);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Hash new password
-    const password_hash = await bcrypt.hash(data.newPassword, SALT_ROUNDS);
-
-    // Update password
-    await db
-      .update(users)
-      .set({ password_hash, updatedAt: new Date() })
-      .where(eq(users.id, user.id));
-
-    return { message: "Password reset successfully" };
   }
 
   async forgotPassword(data: ForgotPasswordInput) {

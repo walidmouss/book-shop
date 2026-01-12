@@ -3,7 +3,6 @@ import { AuthService } from "./auth.service.js";
 import {
   registerSchema,
   loginSchema,
-  resetPasswordSchema,
   forgotPasswordSchema,
 } from "./auth.schema.js";
 import { ZodError } from "zod";
@@ -50,23 +49,6 @@ class AuthController {
       }
       if (error instanceof Error) {
         return c.json({ error: error.message }, 401);
-      }
-      return c.json({ error: "Internal server error" }, 500);
-    }
-  }
-
-  async resetPassword(c: Context) {
-    try {
-      const body = await c.req.json();
-      const data = resetPasswordSchema.parse(body);
-      const result = await authService.resetPassword(data);
-      return c.json(result, 200);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return c.json({ error: formatZodError(error) }, 400);
-      }
-      if (error instanceof Error) {
-        return c.json({ error: error.message }, 400);
       }
       return c.json({ error: "Internal server error" }, 500);
     }

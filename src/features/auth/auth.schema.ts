@@ -35,25 +35,6 @@ export const loginSchema = z.object({
     .min(1, "Password is required"),
 });
 
-export const resetPasswordSchema = z
-  .object({
-    email: z
-      .string({ message: "Email is required" })
-      .email("Invalid email format"),
-    newPassword: z
-      .string({ message: "New password is required" })
-      .min(6, "Password must be at least 6 characters")
-      .max(100, "Password must not exceed 100 characters"),
-    confirmPassword: z
-      .string({ message: "Confirm password is required" })
-      .min(6, "Password must be at least 6 characters")
-      .max(100, "Password must not exceed 100 characters"),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
 export const forgotPasswordSchema = z.object({
   email: z
     .string({ message: "Email is required" })
@@ -62,5 +43,4 @@ export const forgotPasswordSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
