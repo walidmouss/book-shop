@@ -17,6 +17,10 @@ export const paginationSchema = z.object({
     .string()
     .optional()
     .transform((val) => val?.trim() || ""),
+  sortOrder: z
+    .enum(["asc", "desc"])
+    .optional()
+    .transform((val) => val || "desc"),
 });
 
 export type PaginationInput = z.infer<typeof paginationSchema>;

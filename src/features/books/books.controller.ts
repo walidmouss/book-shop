@@ -20,6 +20,7 @@ export const booksController = {
         page: query.page || "1",
         limit: query.limit || "10",
         title: query.title || "",
+        sortOrder: query.sortOrder || "desc",
       });
 
       const result = await booksService.listBooks(paginationData);

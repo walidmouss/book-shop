@@ -1,4 +1,4 @@
-import { count, desc, eq, ilike, and } from "drizzle-orm";
+import { count, desc, eq, ilike, and, asc } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
@@ -41,7 +41,9 @@ export const booksService = {
       .innerJoin(authors, eq(books.author_id, authors.id))
       .innerJoin(categories, eq(books.category_id, categories.id))
       .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-      .orderBy(desc(books.createdAt))
+      .orderBy(
+        pagination.sortOrder === "asc" ? asc(books.title) : desc(books.title)
+      )
       .limit(pagination.limit)
       .offset(offset);
 

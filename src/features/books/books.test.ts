@@ -70,6 +70,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 10,
       title: "",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(3);
@@ -97,11 +98,13 @@ describe("Books listing", () => {
       page: 1,
       limit: 2,
       title: "",
+      sortOrder: "desc",
     });
     const page2 = await booksService.listBooks({
       page: 2,
       limit: 2,
       title: "",
+      sortOrder: "desc",
     });
 
     expect(page1.data.length).toBe(2);
@@ -129,6 +132,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 5,
       title: "",
+      sortOrder: "desc",
     });
     const found = result.data.find((b) => b.id === book.id);
 
@@ -160,6 +164,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 10,
       title: "The Great Adventure",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(1);
@@ -189,6 +194,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 10,
       title: "House",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(2);
@@ -210,6 +216,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 10,
       title: "javascript",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(1);
@@ -230,6 +237,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 10,
       title: "NonExistent",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(0);
@@ -252,6 +260,7 @@ describe("Books listing", () => {
       page: 1,
       limit: 2,
       title: "Search",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(2);
@@ -428,6 +437,7 @@ describe("Books listing with tags", () => {
       page: 1,
       limit: 10,
       title: "",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(1);
@@ -462,6 +472,7 @@ describe("Books listing with tags", () => {
       page: 1,
       limit: 10,
       title: "",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(2);
@@ -496,6 +507,7 @@ describe("Books listing with tags", () => {
       page: 1,
       limit: 10,
       title: "",
+      sortOrder: "desc",
     });
 
     expect(result.data.length).toBe(2);
@@ -503,5 +515,165 @@ describe("Books listing with tags", () => {
       expect(book).toHaveProperty("tags");
       expect(Array.isArray(book.tags)).toBe(true);
     });
+  });
+});
+
+describe("Books sorting", () => {
+  let authService: AuthService;
+  let userId: number;
+
+  beforeEach(async () => {
+    await clearAllTables();
+    authService = new AuthService();
+
+    const result = await authService.register({
+      username: "sortuser",
+      email: "sort@example.com",
+      password: "password123",
+    });
+    userId = result.user.id;
+  });
+
+  it("should sort by title ascending (A-Z)", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Zebra Chronicles",
+      description: "Desc",
+      price: 20,
+      category: "Adventure",
+      author: "Author A",
+      thumbnail: "https://example.com/z.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Apple Adventure",
+      description: "Desc",
+      price: 15,
+      category: "Adventure",
+      author: "Author B",
+      thumbnail: "https://example.com/a.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Monkey Business",
+      description: "Desc",
+      price: 18,
+      category: "Comedy",
+      author: "Author C",
+      thumbnail: "https://example.com/m.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "asc",
+    });
+
+    expect(result.data.length).toBe(3);
+    expect(result.data[0].title).toBe("Apple Adventure");
+    expect(result.data[1].title).toBe("Monkey Business");
+    expect(result.data[2].title).toBe("Zebra Chronicles");
+  });
+
+  it("should sort by title descending (Z-A)", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Zebra Chronicles",
+      description: "Desc",
+      price: 20,
+      category: "Adventure",
+      author: "Author A",
+      thumbnail: "https://example.com/z.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Apple Adventure",
+      description: "Desc",
+      price: 15,
+      category: "Adventure",
+      author: "Author B",
+      thumbnail: "https://example.com/a.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "desc",
+    });
+
+    expect(result.data.length).toBe(2);
+    expect(result.data[0].title).toBe("Zebra Chronicles");
+    expect(result.data[1].title).toBe("Apple Adventure");
+  });
+
+  it("should default to descending sort (Z-A)", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Book A",
+      description: "Desc",
+      price: 10,
+      category: "Fiction",
+      author: "Author",
+      thumbnail: "https://example.com/a.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Book Z",
+      description: "Desc",
+      price: 10,
+      category: "Fiction",
+      author: "Author",
+      thumbnail: "https://example.com/z.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "desc",
+    });
+
+    expect(result.data.length).toBe(2);
+    expect(result.data[0].title).toBe("Book Z");
+    expect(result.data[1].title).toBe("Book A");
+  });
+
+  it("should sort by title with search filter", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Zebra Fiction",
+      description: "Desc",
+      price: 20,
+      category: "Fiction",
+      author: "Author A",
+      thumbnail: "https://example.com/z.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Apple Fiction",
+      description: "Desc",
+      price: 15,
+      category: "Fiction",
+      author: "Author B",
+      thumbnail: "https://example.com/a.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Programming Guide",
+      description: "Desc",
+      price: 25,
+      category: "Tech",
+      author: "Author C",
+      thumbnail: "https://example.com/p.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "Fiction",
+      sortOrder: "asc",
+    });
+
+    expect(result.data.length).toBe(2);
+    expect(result.data[0].title).toBe("Apple Fiction");
+    expect(result.data[1].title).toBe("Zebra Fiction");
   });
 });
