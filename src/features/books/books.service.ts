@@ -1,4 +1,4 @@
-import { count, desc, eq } from "drizzle-orm";
+import { count, desc, eq, ilike, and } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
@@ -10,8 +10,18 @@ export const booksService = {
   async listBooks(pagination: PaginationInput) {
     const offset = (pagination.page - 1) * pagination.limit;
 
-    // Total count
-    const countResult = await db.select({ count: count() }).from(books);
+    // Build where conditions
+    const whereConditions = [];
+    const trimmedTitle = pagination.title?.trim() || "";
+    if (trimmedTitle) {
+      whereConditions.push(ilike(books.title, `%${trimmedTitle}%`));
+    }
+
+    // Total count with filters
+    const countResult = await db
+      .select({ count: count() })
+      .from(books)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
     const totalBooks = countResult[0]?.count || 0;
 
     // Fetch paginated books with author and category
@@ -30,6 +40,7 @@ export const booksService = {
       .from(books)
       .innerJoin(authors, eq(books.author_id, authors.id))
       .innerJoin(categories, eq(books.category_id, categories.id))
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
       .orderBy(desc(books.createdAt))
       .limit(pagination.limit)
       .offset(offset);

@@ -66,7 +66,11 @@ describe("Books listing", () => {
       thumbnail: "https://example.com/c.jpg",
     });
 
-    const result = await booksService.listBooks({ page: 1, limit: 10 });
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+    });
 
     expect(result.data.length).toBe(3);
     expect(result.pagination.total).toBe(3);
@@ -89,8 +93,16 @@ describe("Books listing", () => {
       });
     }
 
-    const page1 = await booksService.listBooks({ page: 1, limit: 2 });
-    const page2 = await booksService.listBooks({ page: 2, limit: 2 });
+    const page1 = await booksService.listBooks({
+      page: 1,
+      limit: 2,
+      title: "",
+    });
+    const page2 = await booksService.listBooks({
+      page: 2,
+      limit: 2,
+      title: "",
+    });
 
     expect(page1.data.length).toBe(2);
     expect(page2.data.length).toBe(2);
@@ -113,12 +125,138 @@ describe("Books listing", () => {
       thumbnail: "https://example.com/meta.jpg",
     });
 
-    const result = await booksService.listBooks({ page: 1, limit: 5 });
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 5,
+      title: "",
+    });
     const found = result.data.find((b) => b.id === book.id);
 
     expect(found).toBeDefined();
     expect(found?.author).toBe("MetaAuthor");
     expect(found?.category).toBe("MetaCat");
+  });
+
+  it("should search by title exact match", async () => {
+    await myBooksService.createBook(userId, {
+      title: "The Great Adventure",
+      description: "An adventure story",
+      price: 20,
+      category: "Fiction",
+      author: "Author A",
+      thumbnail: "https://example.com/adventure.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Another Book",
+      description: "Different book",
+      price: 15,
+      category: "Drama",
+      author: "Author B",
+      thumbnail: "https://example.com/another.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "The Great Adventure",
+    });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].title).toBe("The Great Adventure");
+  });
+
+  it("should search by title partial match", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Mystery House",
+      description: "Mystery story",
+      price: 18,
+      category: "Mystery",
+      author: "Author C",
+      thumbnail: "https://example.com/mystery.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "House of Cards",
+      description: "Political thriller",
+      price: 22,
+      category: "Thriller",
+      author: "Author D",
+      thumbnail: "https://example.com/cards.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "House",
+    });
+
+    expect(result.data.length).toBe(2);
+    expect(result.data.some((b) => b.title === "Mystery House")).toBe(true);
+    expect(result.data.some((b) => b.title === "House of Cards")).toBe(true);
+  });
+
+  it("should search case-insensitively", async () => {
+    await myBooksService.createBook(userId, {
+      title: "JavaScript Guide",
+      description: "JS tutorial",
+      price: 30,
+      category: "Programming",
+      author: "Tech Author",
+      thumbnail: "https://example.com/js.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "javascript",
+    });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].title).toBe("JavaScript Guide");
+  });
+
+  it("should return empty array for non-matching title", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Some Book",
+      description: "Description",
+      price: 10,
+      category: "Fiction",
+      author: "Author",
+      thumbnail: "https://example.com/some.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "NonExistent",
+    });
+
+    expect(result.data.length).toBe(0);
+    expect(result.pagination.total).toBe(0);
+  });
+
+  it("should apply pagination with title filter", async () => {
+    for (let i = 1; i <= 5; i++) {
+      await myBooksService.createBook(userId, {
+        title: `Search Book ${i}`,
+        description: `Desc ${i}`,
+        price: i * 5,
+        category: "Cat",
+        author: "Author",
+        thumbnail: `https://example.com/search${i}.jpg`,
+      });
+    }
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 2,
+      title: "Search",
+    });
+
+    expect(result.data.length).toBe(2);
+    expect(result.pagination.total).toBe(5);
+    expect(result.pagination.totalPages).toBe(3);
   });
 });
 
@@ -286,7 +424,11 @@ describe("Books listing with tags", () => {
       tags: ["space", "futuristic"],
     });
 
-    const result = await booksService.listBooks({ page: 1, limit: 10 });
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+    });
 
     expect(result.data.length).toBe(1);
     expect(result.data[0].tags).toBeDefined();
@@ -316,7 +458,11 @@ describe("Books listing with tags", () => {
       tags: ["tag3"],
     });
 
-    const result = await booksService.listBooks({ page: 1, limit: 10 });
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+    });
 
     expect(result.data.length).toBe(2);
     const bookOne = result.data.find((b) => b.title === "Book One");
@@ -346,7 +492,11 @@ describe("Books listing with tags", () => {
       thumbnail: "https://example.com/untagged.jpg",
     });
 
-    const result = await booksService.listBooks({ page: 1, limit: 10 });
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+    });
 
     expect(result.data.length).toBe(2);
     result.data.forEach((book) => {
