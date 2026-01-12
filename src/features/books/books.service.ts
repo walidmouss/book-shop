@@ -1,4 +1,4 @@
-import { count, desc, eq, ilike, and, asc } from "drizzle-orm";
+import { count, desc, eq, ilike, and, asc, gte, lte } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
@@ -19,6 +19,12 @@ export const booksService = {
     const trimmedCategory = pagination.category?.trim() || "";
     if (trimmedCategory) {
       whereConditions.push(ilike(categories.name, `%${trimmedCategory}%`));
+    }
+    if (pagination.minPrice !== undefined) {
+      whereConditions.push(gte(books.price, pagination.minPrice.toString()));
+    }
+    if (pagination.maxPrice !== undefined) {
+      whereConditions.push(lte(books.price, pagination.maxPrice.toString()));
     }
 
     // Total count with filters

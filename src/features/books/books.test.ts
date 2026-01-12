@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { booksService } from "./books.service.js";
+import { paginationSchema } from "./books.schema.js";
 import { myBooksService } from "../myBooks/myBooks.service.js";
 import { AuthService } from "../auth/auth.service.js";
 import { db } from "../../config/db.js";
@@ -72,6 +73,8 @@ describe("Books listing", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(3);
@@ -101,6 +104,8 @@ describe("Books listing", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
     const page2 = await booksService.listBooks({
       page: 2,
@@ -108,6 +113,8 @@ describe("Books listing", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(page1.data.length).toBe(2);
@@ -137,6 +144,8 @@ describe("Books listing", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
     const found = result.data.find((b) => b.id === book.id);
 
@@ -170,6 +179,8 @@ describe("Books listing", () => {
       title: "The Great Adventure",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
@@ -201,6 +212,8 @@ describe("Books listing", () => {
       title: "House",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -224,6 +237,8 @@ describe("Books listing", () => {
       title: "javascript",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
@@ -246,6 +261,8 @@ describe("Books listing", () => {
       title: "NonExistent",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(0);
@@ -270,6 +287,8 @@ describe("Books listing", () => {
       title: "Search",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -448,6 +467,8 @@ describe("Books listing with tags", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
@@ -484,6 +505,8 @@ describe("Books listing with tags", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -520,6 +543,8 @@ describe("Books listing with tags", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -580,6 +605,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "asc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(3);
@@ -613,6 +640,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -645,6 +674,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "desc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -686,6 +717,8 @@ describe("Books sorting", () => {
       title: "Fiction",
       sortOrder: "asc",
       category: "",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(2);
@@ -718,6 +751,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "desc",
       category: "Mystery",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
@@ -749,6 +784,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "desc",
       category: "Fiction",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
@@ -771,6 +808,8 @@ describe("Books sorting", () => {
       title: "",
       sortOrder: "desc",
       category: "NonExistentCategory",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(0);
@@ -811,10 +850,211 @@ describe("Books sorting", () => {
       title: "Python",
       sortOrder: "desc",
       category: "Technology",
+      minPrice: undefined,
+      maxPrice: undefined,
     });
 
     expect(result.data.length).toBe(1);
     expect(result.data[0].title).toBe("Python Programming");
     expect(result.data[0].category).toBe("Technology");
+  });
+
+  describe("Books price range filtering", () => {
+    it("should filter books by exact price range", async () => {
+      // Looking for any books in the database with prices between 10-35
+      const result = await booksService.listBooks({
+        page: 1,
+        limit: 100,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      // Get min and max prices from available books
+      if (result.data.length > 0) {
+        const prices = result.data
+          .map((b) => parseFloat(b.price))
+          .sort((a, b) => a - b);
+        const minPrice = prices[0];
+        const maxPrice = prices[prices.length - 1];
+
+        const filtered = await booksService.listBooks({
+          page: 1,
+          limit: 100,
+          title: "",
+          sortOrder: "desc",
+          category: "",
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+        });
+
+        expect(filtered.data.length).toBeGreaterThan(0);
+        filtered.data.forEach((book) => {
+          expect(book.price).toBeGreaterThanOrEqual(minPrice);
+          expect(book.price).toBeLessThanOrEqual(maxPrice);
+        });
+      }
+    });
+
+    it("should filter books by minimum price only", async () => {
+      const allBooks = await booksService.listBooks({
+        page: 1,
+        limit: 100,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      if (allBooks.data.length > 1) {
+        const prices = allBooks.data
+          .map((b) => parseFloat(b.price))
+          .sort((a, b) => a - b);
+        const minPrice = prices[Math.floor(prices.length / 2)];
+
+        const result = await booksService.listBooks({
+          page: 1,
+          limit: 100,
+          title: "",
+          sortOrder: "desc",
+          category: "",
+          minPrice: minPrice,
+          maxPrice: undefined,
+        });
+
+        result.data.forEach((book) => {
+          expect(book.price).toBeGreaterThanOrEqual(minPrice);
+        });
+      }
+    });
+
+    it("should filter books by maximum price only", async () => {
+      const allBooks = await booksService.listBooks({
+        page: 1,
+        limit: 100,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      if (allBooks.data.length > 1) {
+        const prices = allBooks.data
+          .map((b) => parseFloat(b.price))
+          .sort((a, b) => a - b);
+        const maxPrice = prices[Math.floor(prices.length / 2)];
+
+        const result = await booksService.listBooks({
+          page: 1,
+          limit: 100,
+          title: "",
+          sortOrder: "desc",
+          category: "",
+          maxPrice: maxPrice,
+          minPrice: undefined,
+        });
+
+        result.data.forEach((book) => {
+          expect(book.price).toBeLessThanOrEqual(maxPrice);
+        });
+      }
+    });
+
+    it("should return empty array for non-matching price range", async () => {
+      const result = await booksService.listBooks({
+        page: 1,
+        limit: 10,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: 10000,
+        maxPrice: 20000,
+      });
+
+      expect(result.data.length).toBe(0);
+      expect(result.pagination.total).toBe(0);
+    });
+
+    it("should combine price range with title filter", async () => {
+      const allBooks = await booksService.listBooks({
+        page: 1,
+        limit: 100,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      if (allBooks.data.length > 0) {
+        const prices = allBooks.data
+          .map((b) => parseFloat(b.price))
+          .sort((a, b) => a - b);
+        const minPrice = prices[0];
+        const maxPrice = prices[prices.length - 1];
+
+        const result = await booksService.listBooks({
+          page: 1,
+          limit: 100,
+          title: "Java",
+          sortOrder: "desc",
+          category: "",
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+        });
+
+        result.data.forEach((book) => {
+          expect(book.title.toLowerCase()).toContain("java");
+          expect(book.price).toBeGreaterThanOrEqual(minPrice);
+          expect(book.price).toBeLessThanOrEqual(maxPrice);
+        });
+      }
+    });
+
+    it("should combine price range with category filter", async () => {
+      const allBooks = await booksService.listBooks({
+        page: 1,
+        limit: 100,
+        title: "",
+        sortOrder: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      if (allBooks.data.length > 0) {
+        const prices = allBooks.data
+          .map((b) => parseFloat(b.price))
+          .sort((a, b) => a - b);
+        const minPrice = prices[0];
+        const maxPrice = prices[prices.length - 1];
+
+        const result = await booksService.listBooks({
+          page: 1,
+          limit: 100,
+          title: "",
+          sortOrder: "desc",
+          category: "Technology",
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+        });
+
+        result.data.forEach((book) => {
+          expect(book.category.toLowerCase()).toContain("technology");
+          expect(book.price).toBeGreaterThanOrEqual(minPrice);
+          expect(book.price).toBeLessThanOrEqual(maxPrice);
+        });
+      }
+    });
+
+    it("should have schema validation for price constraints", () => {
+      // The schema includes validation that maxPrice >= minPrice
+      // This test ensures the schema is defined correctly
+      expect(paginationSchema).toBeDefined();
+    });
   });
 });

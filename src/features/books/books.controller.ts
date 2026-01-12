@@ -22,6 +22,8 @@ export const booksController = {
         title: query.title || "",
         sortOrder: query.sortOrder || "desc",
         category: query.category || "",
+        minPrice: query.minPrice || undefined,
+        maxPrice: query.maxPrice || undefined,
       });
 
       const result = await booksService.listBooks(paginationData);
