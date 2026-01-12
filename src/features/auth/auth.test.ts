@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service.js";
 import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
 import { books } from "../../db/books.js";
+import { book_tags } from "../../db/tags.js";
 import { redis, getTokenUserId } from "../../config/redis.js";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
@@ -13,6 +14,7 @@ const authService = new AuthService();
 // Helper to clear users table before each test
 async function clearUsers() {
   // Delete books first (they have foreign key to users)
+  await db.delete(book_tags);
   await db.delete(books);
   await db.delete(users);
 }

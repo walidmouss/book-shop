@@ -3,6 +3,7 @@ import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
+import { tags, book_tags } from "../../db/tags.js";
 import { PaginationInput, BookIdInput } from "./books.schema.js";
 
 export const booksService = {
@@ -33,18 +34,32 @@ export const booksService = {
       .limit(pagination.limit)
       .offset(offset);
 
+    // Get tags for each book
+    const booksWithTags = await Promise.all(
+      rows.map(async (row) => {
+        const bookTagsResult = await db
+          .select({ tagName: tags.name })
+          .from(book_tags)
+          .innerJoin(tags, eq(book_tags.tag_id, tags.id))
+          .where(eq(book_tags.book_id, row.id));
+
+        return {
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          price: row.price,
+          thumbnail: row.thumbnail,
+          author: row.authorName,
+          category: row.categoryName,
+          tags: bookTagsResult.map((t) => t.tagName),
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+        };
+      })
+    );
+
     return {
-      data: rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        price: row.price,
-        thumbnail: row.thumbnail,
-        author: row.authorName,
-        category: row.categoryName,
-        createdAt: row.createdAt,
-        updatedAt: row.updatedAt,
-      })),
+      data: booksWithTags,
       pagination: {
         page: pagination.page,
         limit: pagination.limit,
@@ -73,6 +88,18 @@ export const booksService = {
       .where(eq(books.id, bookId.id))
       .limit(1);
 
-    return result[0] || null;
+    if (!result[0]) return null;
+
+    // Get tags for this book
+    const bookTagsResult = await db
+      .select({ tagName: tags.name })
+      .from(book_tags)
+      .innerJoin(tags, eq(book_tags.tag_id, tags.id))
+      .where(eq(book_tags.book_id, bookId.id));
+
+    return {
+      ...result[0],
+      tags: bookTagsResult.map((t) => t.tagName),
+    };
   },
 };

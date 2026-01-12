@@ -7,11 +7,14 @@ import { users } from "../../db/users.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
 import { authors } from "../../db/authors.js";
+import { tags, book_tags } from "../../db/tags.js";
 
 async function clearAllTables() {
+  await db.delete(book_tags);
   await db.delete(books);
   await db.delete(authors);
   await db.delete(categories);
+  await db.delete(tags);
   await db.delete(users);
 }
 
@@ -210,5 +213,145 @@ describe("Book details", () => {
     expect(result).toHaveProperty("category");
     expect(result).toHaveProperty("createdAt");
     expect(result).toHaveProperty("updatedAt");
+  });
+
+  it("should include tags in book details", async () => {
+    const book = await myBooksService.createBook(userId, {
+      title: "Book With Tags",
+      description: "A book with tags",
+      price: 25,
+      category: "Fiction",
+      author: "Tagged Author",
+      thumbnail: "https://example.com/tagged.jpg",
+      tags: ["adventure", "fantasy"],
+    });
+
+    const result = await booksService.getBookDetails({ id: book.id });
+
+    expect(result).toBeDefined();
+    expect(result?.tags).toBeDefined();
+    expect(result?.tags?.length).toBe(2);
+    expect(result?.tags).toContain("adventure");
+    expect(result?.tags).toContain("fantasy");
+  });
+
+  it("should return empty tags array for books without tags", async () => {
+    const book = await myBooksService.createBook(userId, {
+      title: "Book Without Tags",
+      description: "A book without tags",
+      price: 20,
+      category: "Drama",
+      author: "No Tags Author",
+      thumbnail: "https://example.com/notags.jpg",
+    });
+
+    const result = await booksService.getBookDetails({ id: book.id });
+
+    expect(result).toBeDefined();
+    expect(result?.tags).toBeDefined();
+    expect(result?.tags?.length).toBe(0);
+  });
+});
+
+describe("Books listing with tags", () => {
+  let authService: AuthService;
+  let userId: number;
+
+  beforeAll(() => {
+    if (!process.env.NODE_ENV?.includes("test")) {
+      throw new Error("Tests must run with NODE_ENV=test to avoid data loss");
+    }
+  });
+
+  beforeEach(async () => {
+    await clearAllTables();
+    authService = new AuthService();
+
+    const result = await authService.register({
+      username: "booksuser",
+      email: "books@example.com",
+      password: "password123",
+    });
+    userId = result.user.id;
+  });
+
+  it("should include tags in book listing", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Tagged Book A",
+      description: "First tagged book",
+      price: 18,
+      category: "Sci-Fi",
+      author: "Author A",
+      thumbnail: "https://example.com/scifi.jpg",
+      tags: ["space", "futuristic"],
+    });
+
+    const result = await booksService.listBooks({ page: 1, limit: 10 });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].tags).toBeDefined();
+    expect(result.data[0].tags?.length).toBe(2);
+    expect(result.data[0].tags).toContain("space");
+    expect(result.data[0].tags).toContain("futuristic");
+  });
+
+  it("should return correct tags for multiple books in listing", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Book One",
+      description: "First book",
+      price: 15,
+      category: "Fiction",
+      author: "Author One",
+      thumbnail: "https://example.com/one.jpg",
+      tags: ["tag1", "tag2"],
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Book Two",
+      description: "Second book",
+      price: 20,
+      category: "Mystery",
+      author: "Author Two",
+      thumbnail: "https://example.com/two.jpg",
+      tags: ["tag3"],
+    });
+
+    const result = await booksService.listBooks({ page: 1, limit: 10 });
+
+    expect(result.data.length).toBe(2);
+    const bookOne = result.data.find((b) => b.title === "Book One");
+    const bookTwo = result.data.find((b) => b.title === "Book Two");
+
+    expect(bookOne?.tags?.length).toBe(2);
+    expect(bookTwo?.tags?.length).toBe(1);
+  });
+
+  it("should include tags property for all books in listing", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Tagged Book",
+      description: "Has tags",
+      price: 25,
+      category: "Fiction",
+      author: "Author",
+      thumbnail: "https://example.com/tagged.jpg",
+      tags: ["recommended"],
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Untagged Book",
+      description: "No tags",
+      price: 22,
+      category: "Drama",
+      author: "Another Author",
+      thumbnail: "https://example.com/untagged.jpg",
+    });
+
+    const result = await booksService.listBooks({ page: 1, limit: 10 });
+
+    expect(result.data.length).toBe(2);
+    result.data.forEach((book) => {
+      expect(book).toHaveProperty("tags");
+      expect(Array.isArray(book.tags)).toBe(true);
+    });
   });
 });
