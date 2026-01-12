@@ -53,6 +53,9 @@ export const myBooksController = {
         limit: query.limit || "10",
         title: query.title || "",
         sort: query.sort || "asc",
+        category: query.category || "",
+        minPrice: query.minPrice || undefined,
+        maxPrice: query.maxPrice || undefined,
       });
 
       const result = await myBooksService.getMyBooks(userId, paginationData);

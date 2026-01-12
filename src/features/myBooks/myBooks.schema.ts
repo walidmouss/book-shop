@@ -76,29 +76,63 @@ export const updateBookSchema = z.object({
 
 export type UpdateBookInput = z.infer<typeof updateBookSchema>;
 
-export const paginationSchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .default("1")
-    .transform((val) => parseInt(val, 10))
-    .refine((val) => val >= 1, "Page must be greater than 0"),
-  limit: z
-    .string()
-    .optional()
-    .default("10")
-    .transform((val) => parseInt(val, 10))
-    .refine((val) => val >= 1 && val <= 100, "Limit must be between 1 and 100"),
-  title: z
-    .string()
-    .optional()
-    .default("")
-    .transform((val) => val.trim()),
-  sort: z
-    .enum(["asc", "desc"])
-    .optional()
-    .default("asc")
-    .describe("Sort order: 'asc' for A-Z, 'desc' for Z-A"),
-});
+export const paginationSchema = z
+  .object({
+    page: z
+      .string()
+      .optional()
+      .default("1")
+      .transform((val) => parseInt(val, 10))
+      .refine((val) => val >= 1, "Page must be greater than 0"),
+    limit: z
+      .string()
+      .optional()
+      .default("10")
+      .transform((val) => parseInt(val, 10))
+      .refine(
+        (val) => val >= 1 && val <= 100,
+        "Limit must be between 1 and 100"
+      ),
+    title: z
+      .string()
+      .optional()
+      .default("")
+      .transform((val) => val.trim()),
+    sort: z
+      .enum(["asc", "desc"])
+      .optional()
+      .default("asc")
+      .describe("Sort order: 'asc' for A-Z, 'desc' for Z-A"),
+    category: z
+      .string()
+      .optional()
+      .transform((val) => val?.trim() || ""),
+    minPrice: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseFloat(val) : undefined))
+      .refine(
+        (val) => val === undefined || val >= 0,
+        "Minimum price must be non-negative"
+      ),
+    maxPrice: z
+      .string()
+      .optional()
+      .transform((val) => (val ? parseFloat(val) : undefined))
+      .refine(
+        (val) => val === undefined || val >= 0,
+        "Maximum price must be non-negative"
+      ),
+  })
+  .refine(
+    (data) =>
+      data.minPrice === undefined ||
+      data.maxPrice === undefined ||
+      data.maxPrice >= data.minPrice,
+    {
+      message: "Maximum price must be greater than or equal to minimum price",
+      path: ["maxPrice"],
+    }
+  );
 
 export type PaginationInput = z.infer<typeof paginationSchema>;

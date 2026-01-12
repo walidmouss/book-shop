@@ -331,6 +331,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(4);
@@ -345,6 +348,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "House of Horror",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(1);
@@ -358,6 +364,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "House",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
@@ -374,6 +383,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "house",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       const result2 = await myBooksService.getMyBooks(testUserId, {
@@ -381,6 +393,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "HOUSE",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       const result3 = await myBooksService.getMyBooks(testUserId, {
@@ -388,6 +403,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "HoUsE",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result1.data.length).toBe(2);
@@ -401,6 +419,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "NonexistentBook",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(0);
@@ -413,6 +434,9 @@ describe("MyBooks Service", () => {
         limit: 2,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
@@ -426,6 +450,9 @@ describe("MyBooks Service", () => {
         limit: 3,
         title: "House",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
@@ -441,6 +468,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "  House  ",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
@@ -471,6 +501,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "House",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       // Should only find 2 books (Horror and Dragon), not Cards
@@ -484,6 +517,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(4);
@@ -499,6 +535,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "",
         sort: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(4);
@@ -514,6 +553,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "House",
         sort: "desc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
@@ -527,11 +569,155 @@ describe("MyBooks Service", () => {
         limit: 2,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);
       expect(result.data[0].title).toBe("1984");
       expect(result.data[1].title).toBe("House of Horror");
+    });
+
+    it("should filter by category", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "Horror",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of Horror");
+      expect(result.pagination.total).toBe(1);
+    });
+
+    it("should filter by category case-insensitively", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "horror",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of Horror");
+    });
+
+    it("should filter by partial category match", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "Fan",
+        minPrice: undefined,
+        maxPrice: undefined,
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of the Dragon");
+    });
+
+    it("should filter by minimum price", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "",
+        minPrice: 15,
+        maxPrice: undefined,
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.data.every((b) => parseFloat(b.price) >= 15)).toBe(true);
+    });
+
+    it("should filter by maximum price", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: 15,
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(result.data.every((b) => parseFloat(b.price) <= 15)).toBe(true);
+    });
+
+    it("should filter by price range", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "",
+        minPrice: 13,
+        maxPrice: 16,
+      });
+
+      expect(result.data.length).toBe(2);
+      expect(
+        result.data.every(
+          (b) => parseFloat(b.price) >= 13 && parseFloat(b.price) <= 16
+        )
+      ).toBe(true);
+    });
+
+    it("should combine category and price filters", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "Horror",
+        minPrice: 10,
+        maxPrice: 20,
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of Horror");
+      expect(parseFloat(result.data[0].price)).toBe(15.99);
+    });
+
+    it("should combine title, category, and price filters", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "House",
+        sort: "asc",
+        category: "Horror",
+        minPrice: 10,
+        maxPrice: 20,
+      });
+
+      expect(result.data.length).toBe(1);
+      expect(result.data[0].title).toBe("House of Horror");
+    });
+
+    it("should return empty array when no books match price range", async () => {
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+        category: "",
+        minPrice: 100,
+        maxPrice: 200,
+      });
+
+      expect(result.data.length).toBe(0);
+      expect(result.pagination.total).toBe(0);
     });
   });
 
@@ -656,6 +842,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       const foundBook = result.data.find(
@@ -693,6 +882,9 @@ describe("MyBooks Service", () => {
         limit: 10,
         title: "",
         sort: "asc",
+        category: "",
+        minPrice: undefined,
+        maxPrice: undefined,
       });
 
       expect(result.data.length).toBe(2);

@@ -1,4 +1,14 @@
-import { eq, count, ilike, and, asc, desc, inArray } from "drizzle-orm";
+import {
+  eq,
+  count,
+  ilike,
+  and,
+  asc,
+  desc,
+  inArray,
+  gte,
+  lte,
+} from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
@@ -145,10 +155,24 @@ export const myBooksService = {
       whereConditions.push(ilike(books.title, `%${trimmedTitle}%`));
     }
 
+    const trimmedCategory = pagination.category.trim();
+    if (trimmedCategory) {
+      whereConditions.push(ilike(categories.name, `%${trimmedCategory}%`));
+    }
+
+    if (pagination.minPrice !== undefined) {
+      whereConditions.push(gte(books.price, pagination.minPrice.toString()));
+    }
+
+    if (pagination.maxPrice !== undefined) {
+      whereConditions.push(lte(books.price, pagination.maxPrice.toString()));
+    }
+
     // Get total count of user's books
     const countResult = await db
       .select({ count: count() })
       .from(books)
+      .innerJoin(categories, eq(books.category_id, categories.id))
       .where(and(...whereConditions));
     const totalBooks = countResult[0]?.count || 0;
 
@@ -168,6 +192,7 @@ export const myBooksService = {
         updatedAt: books.updatedAt,
       })
       .from(books)
+      .innerJoin(categories, eq(books.category_id, categories.id))
       .where(and(...whereConditions))
       .orderBy(orderBy)
       .limit(pagination.limit)
