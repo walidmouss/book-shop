@@ -21,6 +21,10 @@ export const paginationSchema = z.object({
     .enum(["asc", "desc"])
     .optional()
     .transform((val) => val || "desc"),
+  category: z
+    .string()
+    .optional()
+    .transform((val) => val?.trim() || ""),
 });
 
 export type PaginationInput = z.infer<typeof paginationSchema>;

@@ -71,6 +71,7 @@ describe("Books listing", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(3);
@@ -99,12 +100,14 @@ describe("Books listing", () => {
       limit: 2,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
     const page2 = await booksService.listBooks({
       page: 2,
       limit: 2,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(page1.data.length).toBe(2);
@@ -133,6 +136,7 @@ describe("Books listing", () => {
       limit: 5,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
     const found = result.data.find((b) => b.id === book.id);
 
@@ -165,6 +169,7 @@ describe("Books listing", () => {
       limit: 10,
       title: "The Great Adventure",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(1);
@@ -195,6 +200,7 @@ describe("Books listing", () => {
       limit: 10,
       title: "House",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -217,6 +223,7 @@ describe("Books listing", () => {
       limit: 10,
       title: "javascript",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(1);
@@ -238,6 +245,7 @@ describe("Books listing", () => {
       limit: 10,
       title: "NonExistent",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(0);
@@ -261,6 +269,7 @@ describe("Books listing", () => {
       limit: 2,
       title: "Search",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -438,6 +447,7 @@ describe("Books listing with tags", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(1);
@@ -473,6 +483,7 @@ describe("Books listing with tags", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -508,6 +519,7 @@ describe("Books listing with tags", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -567,6 +579,7 @@ describe("Books sorting", () => {
       limit: 10,
       title: "",
       sortOrder: "asc",
+      category: "",
     });
 
     expect(result.data.length).toBe(3);
@@ -599,6 +612,7 @@ describe("Books sorting", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -630,6 +644,7 @@ describe("Books sorting", () => {
       limit: 10,
       title: "",
       sortOrder: "desc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
@@ -670,10 +685,136 @@ describe("Books sorting", () => {
       limit: 10,
       title: "Fiction",
       sortOrder: "asc",
+      category: "",
     });
 
     expect(result.data.length).toBe(2);
     expect(result.data[0].title).toBe("Apple Fiction");
     expect(result.data[1].title).toBe("Zebra Fiction");
+  });
+
+  it("should filter books by exact category match", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Mystery Book",
+      description: "Mystery story",
+      price: 18,
+      category: "Mystery",
+      author: "Mystery Author",
+      thumbnail: "https://example.com/mystery.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Sci-Fi Book",
+      description: "Science fiction",
+      price: 20,
+      category: "Sci-Fi",
+      author: "Sci-Fi Author",
+      thumbnail: "https://example.com/scifi.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "desc",
+      category: "Mystery",
+    });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].category).toBe("Mystery");
+  });
+
+  it("should filter books by partial category match", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Historical Drama",
+      description: "Historical story",
+      price: 22,
+      category: "Historical Fiction",
+      author: "Historical Author",
+      thumbnail: "https://example.com/historical.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Modern Romance",
+      description: "Love story",
+      price: 16,
+      category: "Romance",
+      author: "Romance Author",
+      thumbnail: "https://example.com/romance.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "desc",
+      category: "Fiction",
+    });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].category).toBe("Historical Fiction");
+  });
+
+  it("should return empty array for non-matching category", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Some Book",
+      description: "Description",
+      price: 15,
+      category: "Fiction",
+      author: "Author",
+      thumbnail: "https://example.com/some.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "",
+      sortOrder: "desc",
+      category: "NonExistentCategory",
+    });
+
+    expect(result.data.length).toBe(0);
+    expect(result.pagination.total).toBe(0);
+  });
+
+  it("should combine title and category filters", async () => {
+    await myBooksService.createBook(userId, {
+      title: "Python Programming",
+      description: "Learn Python",
+      price: 30,
+      category: "Technology",
+      author: "Tech Author",
+      thumbnail: "https://example.com/python.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "JavaScript Basics",
+      description: "Learn JavaScript",
+      price: 25,
+      category: "Technology",
+      author: "Tech Author",
+      thumbnail: "https://example.com/js.jpg",
+    });
+
+    await myBooksService.createBook(userId, {
+      title: "Python Cookbook",
+      description: "Python recipes",
+      price: 28,
+      category: "Cooking",
+      author: "Chef",
+      thumbnail: "https://example.com/cookbook.jpg",
+    });
+
+    const result = await booksService.listBooks({
+      page: 1,
+      limit: 10,
+      title: "Python",
+      sortOrder: "desc",
+      category: "Technology",
+    });
+
+    expect(result.data.length).toBe(1);
+    expect(result.data[0].title).toBe("Python Programming");
+    expect(result.data[0].category).toBe("Technology");
   });
 });

@@ -16,11 +16,16 @@ export const booksService = {
     if (trimmedTitle) {
       whereConditions.push(ilike(books.title, `%${trimmedTitle}%`));
     }
+    const trimmedCategory = pagination.category?.trim() || "";
+    if (trimmedCategory) {
+      whereConditions.push(ilike(categories.name, `%${trimmedCategory}%`));
+    }
 
     // Total count with filters
     const countResult = await db
       .select({ count: count() })
       .from(books)
+      .innerJoin(categories, eq(books.category_id, categories.id))
       .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
     const totalBooks = countResult[0]?.count || 0;
 

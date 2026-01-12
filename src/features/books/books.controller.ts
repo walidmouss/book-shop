@@ -21,6 +21,7 @@ export const booksController = {
         limit: query.limit || "10",
         title: query.title || "",
         sortOrder: query.sortOrder || "desc",
+        category: query.category || "",
       });
 
       const result = await booksService.listBooks(paginationData);
