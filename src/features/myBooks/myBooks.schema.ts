@@ -23,6 +23,14 @@ export const createBookSchema = z.object({
     .string({ message: "Thumbnail is required" })
     .url("Thumbnail must be a valid URL")
     .max(255, "Thumbnail must not exceed 255 characters"),
+  tags: z
+    .array(
+      z
+        .string()
+        .min(1, "Tag cannot be empty")
+        .max(50, "Tag must not exceed 50 characters")
+    )
+    .optional(),
 });
 
 export type CreateBookInput = z.infer<typeof createBookSchema>;

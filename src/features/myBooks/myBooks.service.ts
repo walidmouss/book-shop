@@ -1,9 +1,10 @@
-import { eq, count, ilike, and, asc, desc } from "drizzle-orm";
+import { eq, count, ilike, and, asc, desc, inArray } from "drizzle-orm";
 import { db } from "../../config/db.js";
 import { authors } from "../../db/authors.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
 import { users } from "../../db/users.js";
+import { tags, book_tags } from "../../db/tags.js";
 import { CreateBookInput, PaginationInput } from "./myBooks.schema.js";
 
 export const myBooksService = {
@@ -64,6 +65,43 @@ export const myBooksService = {
         })
         .returning();
 
+      // Handle tags if provided
+      const bookTags: string[] = [];
+      if (data.tags && data.tags.length > 0) {
+        const tagIds: number[] = [];
+
+        for (const tagName of data.tags) {
+          const trimmedTag = tagName.trim();
+          if (!trimmedTag) continue;
+
+          // Find or create tag
+          let [tag] = await db
+            .select()
+            .from(tags)
+            .where(eq(tags.name, trimmedTag))
+            .limit(1);
+
+          if (!tag) {
+            [tag] = await db
+              .insert(tags)
+              .values({ name: trimmedTag })
+              .returning();
+          }
+
+          tagIds.push(tag.id);
+          bookTags.push(tag.name);
+        }
+
+        // Create book-tag associations
+        if (tagIds.length > 0) {
+          await db
+            .insert(book_tags)
+            .values(
+              tagIds.map((tagId) => ({ book_id: book.id, tag_id: tagId }))
+            );
+        }
+      }
+
       return {
         id: book.id,
         title: book.title,
@@ -72,6 +110,7 @@ export const myBooksService = {
         thumbnail: book.thumbnail,
         category: category.name,
         author: author.name,
+        tags: bookTags,
         creatorId: book.creator_id,
         createdAt: book.createdAt,
         updatedAt: book.updatedAt,
@@ -145,6 +184,15 @@ export const myBooksService = {
           .where(eq(categories.id, book.category_id))
           .limit(1);
 
+        // Get tags for this book
+        const bookTagsResult = await db
+          .select({ tagName: tags.name })
+          .from(book_tags)
+          .innerJoin(tags, eq(book_tags.tag_id, tags.id))
+          .where(eq(book_tags.book_id, book.id));
+
+        const bookTagNames = bookTagsResult.map((t) => t.tagName);
+
         return {
           id: book.id,
           title: book.title,
@@ -153,6 +201,7 @@ export const myBooksService = {
           thumbnail: book.thumbnail,
           author: author?.name,
           category: category?.name,
+          tags: bookTagNames,
           createdAt: book.createdAt,
           updatedAt: book.updatedAt,
         };

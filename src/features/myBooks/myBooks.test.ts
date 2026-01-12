@@ -6,13 +6,16 @@ import { users } from "../../db/users.js";
 import { books } from "../../db/books.js";
 import { categories } from "../../db/categories.js";
 import { authors } from "../../db/authors.js";
+import { tags, book_tags } from "../../db/tags.js";
 import { eq } from "drizzle-orm";
 
 // Helper functions
 async function clearAllTables() {
+  await db.delete(book_tags);
   await db.delete(books);
   await db.delete(authors);
   await db.delete(categories);
+  await db.delete(tags);
   await db.delete(users);
 }
 
@@ -529,6 +532,179 @@ describe("MyBooks Service", () => {
       expect(result.data.length).toBe(2);
       expect(result.data[0].title).toBe("1984");
       expect(result.data[1].title).toBe("House of Horror");
+    });
+  });
+
+  describe("Tags functionality", () => {
+    it("should create a book with tags", async () => {
+      const bookData = {
+        title: "Tagged Book",
+        description: "A book with tags",
+        price: 24.99,
+        category: "Fiction",
+        author: "Tagged Author",
+        thumbnail: "https://example.com/tagged.jpg",
+        tags: ["adventure", "fantasy", "bestseller"],
+      };
+
+      const book = await myBooksService.createBook(testUserId, bookData);
+
+      expect(book).toBeDefined();
+      expect(book.tags).toBeDefined();
+      expect(book.tags?.length).toBe(3);
+      expect(book.tags).toContain("adventure");
+      expect(book.tags).toContain("fantasy");
+      expect(book.tags).toContain("bestseller");
+    });
+
+    it("should create a book with empty tags array", async () => {
+      const bookData = {
+        title: "Book Without Tags",
+        description: "A book without tags",
+        price: 14.99,
+        category: "Drama",
+        author: "No Tags Author",
+        thumbnail: "https://example.com/notags.jpg",
+        tags: [],
+      };
+
+      const book = await myBooksService.createBook(testUserId, bookData);
+
+      expect(book).toBeDefined();
+      expect(book.tags).toBeDefined();
+      expect(book.tags?.length).toBe(0);
+    });
+
+    it("should create a book without specifying tags", async () => {
+      const bookData = {
+        title: "Default Tags Book",
+        description: "A book with default tags",
+        price: 18.99,
+        category: "Mystery",
+        author: "Default Author",
+        thumbnail: "https://example.com/default.jpg",
+      };
+
+      const book = await myBooksService.createBook(testUserId, bookData);
+
+      expect(book).toBeDefined();
+      expect(book.tags).toBeDefined();
+      expect(book.tags?.length).toBe(0);
+    });
+
+    it("should reuse existing tags across books", async () => {
+      const bookData1 = {
+        title: "Book A with Tags",
+        description: "First book",
+        price: 20.0,
+        category: "Fiction",
+        author: "Author A",
+        thumbnail: "https://example.com/booka.jpg",
+        tags: ["scifi", "futuristic"],
+      };
+
+      const bookData2 = {
+        title: "Book B with Tags",
+        description: "Second book",
+        price: 21.0,
+        category: "Science Fiction",
+        author: "Author B",
+        thumbnail: "https://example.com/bookb.jpg",
+        tags: ["scifi", "technology"],
+      };
+
+      await myBooksService.createBook(testUserId, bookData1);
+      await myBooksService.createBook(testUserId, bookData2);
+
+      // Verify only one "scifi" tag was created
+      const tags_list = await db.select().from(tags);
+      const scifiCount = tags_list.filter((t) => t.name === "scifi").length;
+      expect(scifiCount).toBe(1);
+    });
+
+    it("should trim whitespace from tags", async () => {
+      const bookData = {
+        title: "Whitespace Tags Book",
+        description: "Testing tag whitespace trimming",
+        price: 16.99,
+        category: "Thriller",
+        author: "Trim Author",
+        thumbnail: "https://example.com/trim.jpg",
+        tags: ["  action  ", "  suspense  "],
+      };
+
+      const book = await myBooksService.createBook(testUserId, bookData);
+
+      expect(book.tags?.length).toBe(2);
+      expect(book.tags).toContain("action");
+      expect(book.tags).toContain("suspense");
+    });
+
+    it("should include tags when retrieving my books", async () => {
+      await myBooksService.createBook(testUserId, {
+        title: "Tagged Book For Retrieval",
+        description: "A tagged book",
+        price: 22.99,
+        category: "Fiction",
+        author: "Retrieval Author",
+        thumbnail: "https://example.com/retrieval.jpg",
+        tags: ["recommended", "classic"],
+      });
+
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+      });
+
+      const foundBook = result.data.find(
+        (b) => b.title === "Tagged Book For Retrieval"
+      );
+      expect(foundBook).toBeDefined();
+      expect(foundBook?.tags).toBeDefined();
+      expect(foundBook?.tags?.length).toBe(2);
+      expect(foundBook?.tags).toContain("recommended");
+      expect(foundBook?.tags).toContain("classic");
+    });
+
+    it("should handle books with and without tags in getMyBooks", async () => {
+      await myBooksService.createBook(testUserId, {
+        title: "Book With Tags",
+        description: "Has tags",
+        price: 19.99,
+        category: "Fiction",
+        author: "Author One",
+        thumbnail: "https://example.com/with.jpg",
+        tags: ["tag1", "tag2"],
+      });
+
+      await myBooksService.createBook(testUserId, {
+        title: "Book Without Tags",
+        description: "No tags",
+        price: 17.99,
+        category: "Drama",
+        author: "Author Two",
+        thumbnail: "https://example.com/without.jpg",
+      });
+
+      const result = await myBooksService.getMyBooks(testUserId, {
+        page: 1,
+        limit: 10,
+        title: "",
+        sort: "asc",
+      });
+
+      expect(result.data.length).toBe(2);
+      const bookWithTags = result.data.find(
+        (b) => b.title === "Book With Tags"
+      );
+      const bookWithoutTags = result.data.find(
+        (b) => b.title === "Book Without Tags"
+      );
+
+      expect(bookWithTags?.tags?.length).toBe(2);
+      expect(bookWithoutTags?.tags?.length).toBe(0);
     });
   });
 });
