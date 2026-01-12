@@ -408,4 +408,27 @@ export const myBooksService = {
       throw err;
     }
   },
+
+  async deleteBook(userId: number, bookId: number) {
+    // Verify the book exists and belongs to the user
+    const [book] = await db
+      .select()
+      .from(books)
+      .where(and(eq(books.id, bookId), eq(books.creator_id, userId)))
+      .limit(1);
+
+    if (!book) {
+      throw new Error(
+        "Book not found or you do not have permission to delete it"
+      );
+    }
+
+    // Delete book-tag associations first (foreign key constraint)
+    await db.delete(book_tags).where(eq(book_tags.book_id, bookId));
+
+    // Delete the book
+    await db.delete(books).where(eq(books.id, bookId));
+
+    return { success: true, message: "Book deleted successfully" };
+  },
 };

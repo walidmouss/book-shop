@@ -972,4 +972,137 @@ describe("MyBooks Service", () => {
       expect(updated.tags?.length).toBe(2);
     });
   });
+
+  describe("deleteBook", () => {
+    it("should delete a book successfully", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Book to Delete",
+        description: "This book will be deleted",
+        price: 20,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/delete.jpg",
+      });
+
+      const result = await myBooksService.deleteBook(testUserId, book.id);
+
+      expect(result.success).toBe(true);
+      expect(result.message).toBe("Book deleted successfully");
+
+      // Verify book is actually deleted
+      const books_list = await db
+        .select()
+        .from(books)
+        .where(eq(books.id, book.id));
+      expect(books_list.length).toBe(0);
+    });
+
+    it("should delete book with tags", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Book With Tags to Delete",
+        description: "Has tags",
+        price: 25,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/tagged-delete.jpg",
+        tags: ["tag1", "tag2", "tag3"],
+      });
+
+      const result = await myBooksService.deleteBook(testUserId, book.id);
+
+      expect(result.success).toBe(true);
+
+      // Verify book is deleted
+      const books_list = await db
+        .select()
+        .from(books)
+        .where(eq(books.id, book.id));
+      expect(books_list.length).toBe(0);
+
+      // Verify book_tags associations are deleted
+      const tags_list = await db
+        .select()
+        .from(book_tags)
+        .where(eq(book_tags.book_id, book.id));
+      expect(tags_list.length).toBe(0);
+    });
+
+    it("should throw error when deleting non-existent book", async () => {
+      await expect(
+        myBooksService.deleteBook(testUserId, 999999)
+      ).rejects.toThrow("Book not found");
+    });
+
+    it("should throw error when deleting another user's book", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "User 1 Book Delete",
+        description: "Owned by user 1",
+        price: 15,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/book.jpg",
+      });
+
+      // Try to delete with different user ID
+      await expect(myBooksService.deleteBook(99999, book.id)).rejects.toThrow(
+        "Book not found or you do not have permission"
+      );
+    });
+
+    it("should not affect other books when deleting one", async () => {
+      const book1 = await myBooksService.createBook(testUserId, {
+        title: "Book 1 Keep",
+        description: "Keep this",
+        price: 10,
+        category: "Cat1",
+        author: "Auth1",
+        thumbnail: "https://example.com/1.jpg",
+      });
+
+      const book2 = await myBooksService.createBook(testUserId, {
+        title: "Book 2 Delete",
+        description: "Delete this",
+        price: 20,
+        category: "Cat2",
+        author: "Auth2",
+        thumbnail: "https://example.com/2.jpg",
+      });
+
+      await myBooksService.deleteBook(testUserId, book2.id);
+
+      // Verify book1 still exists
+      const books_list = await db
+        .select()
+        .from(books)
+        .where(eq(books.id, book1.id));
+      expect(books_list.length).toBe(1);
+      expect(books_list[0].title).toBe("Book 1 Keep");
+    });
+
+    it("should delete book and allow creating a new book with the same title", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Reusable Title",
+        description: "First book",
+        price: 10,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/first.jpg",
+      });
+
+      await myBooksService.deleteBook(testUserId, book.id);
+
+      // Should be able to create a new book with the same title
+      const newBook = await myBooksService.createBook(testUserId, {
+        title: "Reusable Title",
+        description: "Second book",
+        price: 20,
+        category: "Drama",
+        author: "Another Author",
+        thumbnail: "https://example.com/second.jpg",
+      });
+
+      expect(newBook.title).toBe("Reusable Title");
+      expect(newBook.id).not.toBe(book.id);
+    });
+  });
 });

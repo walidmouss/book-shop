@@ -109,4 +109,27 @@ export const myBooksController = {
       );
     }
   },
+
+  async deleteBook(c: Context) {
+    try {
+      const userId = c.get("userId");
+      const bookId = parseInt(c.req.param("id"), 10);
+
+      if (isNaN(bookId)) {
+        return c.json({ error: "Invalid book ID" }, 400);
+      }
+
+      const result = await myBooksService.deleteBook(userId, bookId);
+
+      return c.json(result);
+    } catch (error: any) {
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        error.message.includes("not found") ? 404 : 400
+      );
+    }
+  },
 };
