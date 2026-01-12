@@ -1,7 +1,11 @@
 import { Context } from "hono";
 import { ZodError } from "zod";
 import { myBooksService } from "./myBooks.service.js";
-import { createBookSchema, paginationSchema } from "./myBooks.schema.js";
+import {
+  createBookSchema,
+  updateBookSchema,
+  paginationSchema,
+} from "./myBooks.schema.js";
 
 // Helper to format Zod validation errors
 function formatZodError(error: ZodError): string {
@@ -67,6 +71,41 @@ export const myBooksController = {
           error: error.message,
         },
         500
+      );
+    }
+  },
+
+  async updateBook(c: Context) {
+    try {
+      const userId = c.get("userId");
+      const bookId = parseInt(c.req.param("id"), 10);
+
+      if (isNaN(bookId)) {
+        return c.json({ error: "Invalid book ID" }, 400);
+      }
+
+      const body = await c.req.json();
+      const validatedData = updateBookSchema.parse(body);
+      const book = await myBooksService.updateBook(
+        userId,
+        bookId,
+        validatedData
+      );
+
+      return c.json({
+        success: true,
+        data: book,
+      });
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        return c.json({ error: formatZodError(error) }, 400);
+      }
+      return c.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        error.message.includes("not found") ? 404 : 400
       );
     }
   },

@@ -12,3 +12,6 @@ myBooksRoutes.post("/", myBooksController.createBook);
 
 // GET /my-books - Get user's books with pagination
 myBooksRoutes.get("/", myBooksController.getMyBooks);
+
+// PUT /my-books/:id - Update a book
+myBooksRoutes.put("/:id", myBooksController.updateBook);

@@ -35,6 +35,47 @@ export const createBookSchema = z.object({
 
 export type CreateBookInput = z.infer<typeof createBookSchema>;
 
+export const updateBookSchema = z.object({
+  title: z
+    .string({ message: "Title is required" })
+    .min(1, "Title is required")
+    .max(255, "Title must not exceed 255 characters")
+    .optional(),
+  description: z
+    .string({ message: "Description is required" })
+    .min(1, "Description is required")
+    .optional(),
+  price: z
+    .number({ message: "Price is required" })
+    .positive("Price must be greater than 0")
+    .optional(),
+  category: z
+    .string({ message: "Category is required" })
+    .min(1, "Category is required")
+    .max(100, "Category must not exceed 100 characters")
+    .optional(),
+  author: z
+    .string({ message: "Author name is required" })
+    .min(1, "Author name is required")
+    .max(100, "Author name must not exceed 100 characters")
+    .optional(),
+  thumbnail: z
+    .string({ message: "Thumbnail is required" })
+    .url("Thumbnail must be a valid URL")
+    .max(255, "Thumbnail must not exceed 255 characters")
+    .optional(),
+  tags: z
+    .array(
+      z
+        .string()
+        .min(1, "Tag cannot be empty")
+        .max(50, "Tag must not exceed 50 characters")
+    )
+    .optional(),
+});
+
+export type UpdateBookInput = z.infer<typeof updateBookSchema>;
+
 export const paginationSchema = z.object({
   page: z
     .string()

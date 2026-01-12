@@ -707,4 +707,269 @@ describe("MyBooks Service", () => {
       expect(bookWithoutTags?.tags?.length).toBe(0);
     });
   });
+
+  describe("updateBook", () => {
+    it("should update a book with valid data", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Original Title",
+        description: "Original description",
+        price: 19.99,
+        category: "Fiction",
+        author: "Author A",
+        thumbnail: "https://example.com/original.jpg",
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        title: "Updated Title",
+        description: "Updated description",
+        price: 24.99,
+      });
+
+      expect(updated.id).toBe(book.id);
+      expect(updated.title).toBe("Updated Title");
+      expect(updated.description).toBe("Updated description");
+      expect(updated.price).toBe("24.99");
+      expect(updated.author).toBe("Author A"); // Unchanged
+      expect(updated.category).toBe("Fiction"); // Unchanged
+    });
+
+    it("should update only provided fields", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Book to Update",
+        description: "Original description",
+        price: 15.99,
+        category: "Drama",
+        author: "Author B",
+        thumbnail: "https://example.com/book.jpg",
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        title: "New Title Only",
+      });
+
+      expect(updated.title).toBe("New Title Only");
+      expect(updated.description).toBe("Original description");
+      expect(updated.price).toBe("15.99");
+      expect(updated.category).toBe("Drama");
+      expect(updated.author).toBe("Author B");
+    });
+
+    it("should update author to existing author", async () => {
+      const book1 = await myBooksService.createBook(testUserId, {
+        title: "Book 1",
+        description: "Desc 1",
+        price: 10,
+        category: "Cat1",
+        author: "Existing Author",
+        thumbnail: "https://example.com/1.jpg",
+      });
+
+      const book2 = await myBooksService.createBook(testUserId, {
+        title: "Book 2",
+        description: "Desc 2",
+        price: 20,
+        category: "Cat2",
+        author: "Another Author",
+        thumbnail: "https://example.com/2.jpg",
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book2.id, {
+        author: "Existing Author",
+      });
+
+      expect(updated.author).toBe("Existing Author");
+      expect(updated.id).toBe(book2.id);
+    });
+
+    it("should update category to existing category", async () => {
+      const book1 = await myBooksService.createBook(testUserId, {
+        title: "Book Cat 1",
+        description: "Desc 1",
+        price: 10,
+        category: "Science Fiction",
+        author: "Auth1",
+        thumbnail: "https://example.com/1.jpg",
+      });
+
+      const book2 = await myBooksService.createBook(testUserId, {
+        title: "Book Cat 2",
+        description: "Desc 2",
+        price: 20,
+        category: "Mystery",
+        author: "Auth2",
+        thumbnail: "https://example.com/2.jpg",
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book2.id, {
+        category: "Science Fiction",
+      });
+
+      expect(updated.category).toBe("Science Fiction");
+    });
+
+    it("should update tags", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Book With Tags Update",
+        description: "Has tags",
+        price: 20,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/tags.jpg",
+        tags: ["old-tag"],
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        tags: ["new-tag", "another-tag"],
+      });
+
+      expect(updated.tags?.length).toBe(2);
+      expect(updated.tags).toContain("new-tag");
+      expect(updated.tags).toContain("another-tag");
+      expect(updated.tags).not.toContain("old-tag");
+    });
+
+    it("should clear tags when updating with empty array", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Book Clear Tags",
+        description: "Has tags initially",
+        price: 22,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/clear.jpg",
+        tags: ["tag1", "tag2"],
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        tags: [],
+      });
+
+      expect(updated.tags?.length).toBe(0);
+    });
+
+    it("should reuse existing tags when updating", async () => {
+      const book1 = await myBooksService.createBook(testUserId, {
+        title: "Book Reuse Tags 1",
+        description: "Desc",
+        price: 10,
+        category: "Cat",
+        author: "Auth",
+        thumbnail: "https://example.com/1.jpg",
+        tags: ["shared-tag"],
+      });
+
+      const book2 = await myBooksService.createBook(testUserId, {
+        title: "Book Reuse Tags 2",
+        description: "Desc",
+        price: 20,
+        category: "Cat2",
+        author: "Auth2",
+        thumbnail: "https://example.com/2.jpg",
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book2.id, {
+        tags: ["shared-tag"],
+      });
+
+      expect(updated.tags?.length).toBe(1);
+      expect(updated.tags).toContain("shared-tag");
+    });
+
+    it("should throw error when updating non-existent book", async () => {
+      await expect(
+        myBooksService.updateBook(testUserId, 999999, { title: "New Title" })
+      ).rejects.toThrow("Book not found");
+    });
+
+    it("should throw error when updating another user's book", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "User 1 Book",
+        description: "Owned by user 1",
+        price: 15,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/book.jpg",
+      });
+
+      // Try to update with different user ID
+      await expect(
+        myBooksService.updateBook(99999, book.id, { title: "Hacked" })
+      ).rejects.toThrow("Book not found or you do not have permission");
+    });
+
+    it("should throw error for duplicate title", async () => {
+      const book1 = await myBooksService.createBook(testUserId, {
+        title: "Unique Title 1",
+        description: "Desc 1",
+        price: 10,
+        category: "Cat1",
+        author: "Auth1",
+        thumbnail: "https://example.com/1.jpg",
+      });
+
+      const book2 = await myBooksService.createBook(testUserId, {
+        title: "Unique Title 2",
+        description: "Desc 2",
+        price: 20,
+        category: "Cat2",
+        author: "Auth2",
+        thumbnail: "https://example.com/2.jpg",
+      });
+
+      await expect(
+        myBooksService.updateBook(testUserId, book2.id, {
+          title: "Unique Title 1",
+        })
+      ).rejects.toThrow("A book with this title already exists");
+    });
+
+    it("should preserve tags when not updating them", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Preserve Tags",
+        description: "Has tags",
+        price: 25,
+        category: "Fiction",
+        author: "Author",
+        thumbnail: "https://example.com/preserve.jpg",
+        tags: ["tag1", "tag2"],
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        title: "Updated Title",
+      });
+
+      expect(updated.tags?.length).toBe(2);
+      expect(updated.tags).toContain("tag1");
+      expect(updated.tags).toContain("tag2");
+    });
+
+    it("should update all fields at once", async () => {
+      const book = await myBooksService.createBook(testUserId, {
+        title: "Full Update",
+        description: "Original",
+        price: 10,
+        category: "Original Cat",
+        author: "Original Auth",
+        thumbnail: "https://example.com/original.jpg",
+        tags: ["original"],
+      });
+
+      const updated = await myBooksService.updateBook(testUserId, book.id, {
+        title: "All Updated",
+        description: "All fields updated",
+        price: 99.99,
+        category: "Updated Cat",
+        author: "Updated Auth",
+        thumbnail: "https://example.com/updated.jpg",
+        tags: ["updated", "new"],
+      });
+
+      expect(updated.title).toBe("All Updated");
+      expect(updated.description).toBe("All fields updated");
+      expect(updated.price).toBe("99.99");
+      expect(updated.category).toBe("Updated Cat");
+      expect(updated.author).toBe("Updated Auth");
+      expect(updated.thumbnail).toBe("https://example.com/updated.jpg");
+      expect(updated.tags?.length).toBe(2);
+    });
+  });
 });
