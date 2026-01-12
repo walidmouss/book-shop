@@ -4,11 +4,12 @@ import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
 import { eq, or } from "drizzle-orm";
 import { env } from "../../config/env.js";
-import { storeToken, deleteToken } from "../../config/redis.js";
+import { storeToken, deleteToken, storeOTP } from "../../config/redis.js";
 import type {
   RegisterInput,
   LoginInput,
   ResetPasswordInput,
+  ForgotPasswordInput,
 } from "./auth.schema.js";
 
 const SALT_ROUNDS = 10;
@@ -134,6 +135,35 @@ export class AuthService {
       .where(eq(users.id, user.id));
 
     return { message: "Password reset successfully" };
+  }
+
+  async forgotPassword(data: ForgotPasswordInput) {
+    // Check if user exists
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, data.email))
+      .limit(1);
+
+    if (!user) {
+      // For security, don't reveal if user exists
+      return {
+        message: "If an account exists with this email, an OTP has been sent",
+      };
+    }
+
+    const otp = "123456";
+
+    // Store OTP in Redis with 10 minutes expiration
+    await storeOTP(user.id, otp);
+
+    // TODO: Send OTP via email
+    // For now, just log it (in production, integrate with email service)
+    console.log(`OTP for ${data.email}: ${otp}`);
+
+    return {
+      message: "If an account exists with this email, an OTP has been sent",
+    };
   }
 
   async logout(token: string) {

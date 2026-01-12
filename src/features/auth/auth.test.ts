@@ -4,7 +4,7 @@ import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
 import { books } from "../../db/books.js";
 import { book_tags } from "../../db/tags.js";
-import { redis, getTokenUserId } from "../../config/redis.js";
+import { redis, getTokenUserId, getOTP } from "../../config/redis.js";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
 import { eq } from "drizzle-orm";
@@ -19,11 +19,13 @@ async function clearUsers() {
   await db.delete(users);
 }
 
-// Helper to clear all Redis test tokens
+// Helper to clear all Redis test tokens and OTPs
 async function clearRedisTokens() {
-  const keys = await redis.keys("auth:token:*");
-  if (keys.length > 0) {
-    await redis.del(...keys);
+  const tokenKeys = await redis.keys("auth:token:*");
+  const otpKeys = await redis.keys("auth:otp:*");
+  const allKeys = [...tokenKeys, ...otpKeys];
+  if (allKeys.length > 0) {
+    await redis.del(...allKeys);
   }
 }
 
@@ -346,6 +348,60 @@ describe("Auth Service", () => {
       // Verify user2 token is still valid
       const userId2 = await getTokenUserId(user2.token);
       expect(userId2).toBe(user2.user.id);
+    });
+  });
+
+  describe("forgotPassword", () => {
+    it("should return success message for valid email", async () => {
+      await authService.register({
+        username: "forgottest",
+        email: "forgot@example.com",
+        password: "password123",
+      });
+
+      const result = await authService.forgotPassword({
+        email: "forgot@example.com",
+      });
+
+      expect(result.message).toContain("OTP has been sent");
+    });
+
+    it("should return success message for non-existent email (security)", async () => {
+      const result = await authService.forgotPassword({
+        email: "nonexistent@example.com",
+      });
+
+      expect(result.message).toContain("OTP has been sent");
+    });
+
+    it("should store OTP in Redis for valid user", async () => {
+      const registerResult = await authService.register({
+        username: "otptest",
+        email: "otp@example.com",
+        password: "password123",
+      });
+
+      await authService.forgotPassword({
+        email: "otp@example.com",
+      });
+
+      const storedOTP = await getOTP(registerResult.user.id);
+      expect(storedOTP).toBe("123456");
+    });
+
+    it("should use static OTP 123456", async () => {
+      const registerResult = await authService.register({
+        username: "staticotp",
+        email: "static@example.com",
+        password: "password123",
+      });
+
+      await authService.forgotPassword({
+        email: "static@example.com",
+      });
+
+      const storedOTP = await getOTP(registerResult.user.id);
+      expect(storedOTP).toBe("123456");
     });
   });
 
