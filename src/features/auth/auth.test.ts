@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { AuthService } from "./auth.service.js";
 import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
@@ -8,6 +8,11 @@ import { redis, getTokenUserId, getOTP } from "../../config/redis.js";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
 import { eq } from "drizzle-orm";
+
+// Mock the email module
+vi.mock("../../config/email.js", () => ({
+  sendOTPEmail: vi.fn().mockResolvedValue(undefined),
+}));
 
 const authService = new AuthService();
 
@@ -324,6 +329,35 @@ describe("Auth Service", () => {
 
       const storedOTP = await getOTP(registerResult.user.id);
       expect(storedOTP).toBe("123456");
+    });
+
+    it("should send OTP via email for valid user", async () => {
+      const { sendOTPEmail } = await import("../../config/email.js");
+      
+      await authService.register({
+        username: "emailtest",
+        email: "emailtest@example.com",
+        password: "password123",
+      });
+
+      await authService.forgotPassword({
+        email: "emailtest@example.com",
+      });
+
+      expect(sendOTPEmail).toHaveBeenCalledWith("emailtest@example.com", "123456");
+    });
+
+    it("should not send email for non-existent user", async () => {
+      const { sendOTPEmail } = await import("../../config/email.js");
+      
+      // Clear previous calls
+      vi.clearAllMocks();
+
+      await authService.forgotPassword({
+        email: "nonexistent@example.com",
+      });
+
+      expect(sendOTPEmail).not.toHaveBeenCalled();
     });
   });
 

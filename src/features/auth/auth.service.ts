@@ -5,6 +5,7 @@ import { users } from "../../db/users.js";
 import { eq, or } from "drizzle-orm";
 import { env } from "../../config/env.js";
 import { storeToken, deleteToken, storeOTP } from "../../config/redis.js";
+import { sendOTPEmail } from "../../config/email.js";
 import type {
   RegisterInput,
   LoginInput,
@@ -132,9 +133,14 @@ export class AuthService {
     // Store OTP in Redis with 10 minutes expiration
     await storeOTP(user.id, otp);
 
-    // TODO: Send OTP via email
-    // For now, just log it (in production, integrate with email service)
-    console.log(`OTP for ${data.email}: ${otp}`);
+    // Send OTP via email
+    try {
+      await sendOTPEmail(data.email, otp);
+    } catch (error) {
+      console.error("Failed to send OTP email:", error);
+      // Continue execution - OTP is still stored in Redis
+      // In production, you might want to handle this differently
+    }
 
     return {
       message: "If an account exists with this email, an OTP has been sent",
