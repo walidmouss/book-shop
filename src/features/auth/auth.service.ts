@@ -4,11 +4,18 @@ import { db } from "../../config/db.js";
 import { users } from "../../db/users.js";
 import { eq, or } from "drizzle-orm";
 import { env } from "../../config/env.js";
-import { storeToken, deleteToken, storeOTP } from "../../config/redis.js";
+import {
+  storeToken,
+  deleteToken,
+  storeOTP,
+  getOTP,
+  deleteOTP,
+} from "../../config/redis.js";
 import type {
   RegisterInput,
   LoginInput,
   ForgotPasswordInput,
+  ResetPasswordWithOtpInput,
 } from "./auth.schema.js";
 
 const SALT_ROUNDS = 10;
@@ -139,6 +146,39 @@ export class AuthService {
     return {
       message: "If an account exists with this email, an OTP has been sent",
     };
+  }
+
+  async resetPassword(data: ResetPasswordWithOtpInput) {
+    // Find user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, data.email))
+      .limit(1);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Verify OTP
+    const stored = await getOTP(user.id);
+    if (!stored || stored !== data.otp) {
+      throw new Error("Invalid or expired OTP");
+    }
+
+    // Hash new password
+    const password_hash = await bcrypt.hash(data.newPassword, SALT_ROUNDS);
+
+    // Update password
+    await db
+      .update(users)
+      .set({ password_hash, updatedAt: new Date() })
+      .where(eq(users.id, user.id));
+
+    // Invalidate OTP
+    await deleteOTP(user.id);
+
+    return { message: "Password reset successfully" };
   }
 
   async logout(token: string) {

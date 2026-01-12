@@ -4,6 +4,7 @@ import {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
+  resetPasswordWithOtpSchema,
 } from "./auth.schema.js";
 import { ZodError } from "zod";
 
@@ -59,6 +60,23 @@ class AuthController {
       const body = await c.req.json();
       const data = forgotPasswordSchema.parse(body);
       const result = await authService.forgotPassword(data);
+      return c.json(result, 200);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return c.json({ error: formatZodError(error) }, 400);
+      }
+      if (error instanceof Error) {
+        return c.json({ error: error.message }, 400);
+      }
+      return c.json({ error: "Internal server error" }, 500);
+    }
+  }
+
+  async resetPassword(c: Context) {
+    try {
+      const body = await c.req.json();
+      const data = resetPasswordWithOtpSchema.parse(body);
+      const result = await authService.resetPassword(data);
       return c.json(result, 200);
     } catch (error) {
       if (error instanceof ZodError) {

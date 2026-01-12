@@ -327,6 +327,65 @@ describe("Auth Service", () => {
     });
   });
 
+  describe("resetPassword", () => {
+    beforeEach(async () => {
+      // Register and request OTP
+      await authService.register({
+        username: "otpreset",
+        email: "otpreset@example.com",
+        password: "password123",
+      });
+      await authService.forgotPassword({ email: "otpreset@example.com" });
+    });
+
+    it("should reset password with valid OTP", async () => {
+      const result = await authService.resetPassword({
+        email: "otpreset@example.com",
+        otp: "123456",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+      expect(result.message).toBe("Password reset successfully");
+
+      // Can login with new password
+      const login = await authService.login({
+        usernameOrEmail: "otpreset@example.com",
+        password: "newpassword123",
+      });
+      expect(login).toHaveProperty("token");
+    });
+
+    it("should fail with wrong OTP", async () => {
+      await expect(
+        authService.resetPassword({
+          email: "otpreset@example.com",
+          otp: "000000",
+          newPassword: "newpassword123",
+          confirmPassword: "newpassword123",
+        })
+      ).rejects.toThrow("Invalid or expired OTP");
+    });
+
+    it("should invalidate OTP after successful reset", async () => {
+      await authService.resetPassword({
+        email: "otpreset@example.com",
+        otp: "123456",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+
+      // Attempt to reuse OTP
+      await expect(
+        authService.resetPassword({
+          email: "otpreset@example.com",
+          otp: "123456",
+          newPassword: "anotherpassword",
+          confirmPassword: "anotherpassword",
+        })
+      ).rejects.toThrow("Invalid or expired OTP");
+    });
+  });
+
   describe("integration", () => {
     it("should complete full user lifecycle", async () => {
       // Register

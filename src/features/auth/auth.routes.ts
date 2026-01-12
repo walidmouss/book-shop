@@ -8,6 +8,7 @@ export const authRoutes = new Hono();
 authRoutes.post("/register", authController.register);
 authRoutes.post("/login", authController.login);
 authRoutes.post("/forgot-password", authController.forgotPassword);
+authRoutes.post("/reset-password", authController.resetPassword);
 
 // Protected routes
 authRoutes.post("/logout", authMiddleware, authController.logout);
