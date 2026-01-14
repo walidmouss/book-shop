@@ -1,0 +1,3874 @@
+{
+	"info": {
+		"_postman_id": "11e9c6b2-ec02-438a-a717-ce7b12d2ce86",
+		"name": "book shop API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46708987"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"wello\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "# User Registration Endpoint\n\n## Overview\nThis endpoint allows new users to register an account in the system. It accepts user credentials and creates a new user account upon successful validation.\n\n## Request Body Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `username` | string | Yes | The desired username for the new account. Must be unique in the system. |\n| `email` | string | Optional | User's email address. Must be in valid email format if provided. |\n| `password` | string | Yes | The password for the new account. Should meet security requirements. |\n\n## Response Codes\n\n| Status Code | Description |\n|-------------|-------------|\n| `200/201` | **Success** - User account created successfully |\n| `400` | **Bad Request** - Invalid input data (see error cases below) |\n| `409` | **Conflict** - Username or email already exists |\n| `500` | **Server Error** - Internal server error during registration |\n\n## Validation Rules\n\n- **Username**: Required field, cannot be empty\n- **Email**: Must be in valid email format (e.g., user@example.com) if provided\n- **Password**: Required field, should meet minimum security requirements\n\n## Error Cases\n\nThis endpoint has documented examples for common error scenarios:\n\n- **Missing Username**: Returns error when the username field is not provided in the request body\n- **Invalid Email Format**: Returns error when the email field contains an improperly formatted email address\n\n## Example Usage\n\n**Successful Registration:**\n```json\n{\n  \"username\": \"wello\",\n  \"email\": \"wello@test.com\",\n  \"password\": \"wello123\"\n}\n```\n\n**Notes:**\n- Ensure all required fields are included in the request body\n- Passwords should be transmitted over HTTPS in production environments\n- Check existing examples for detailed error response formats"
+					},
+					"response": [
+						{
+							"name": "successful register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"wello\",\r\n  \"email\": \"wello@test.com\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "290"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:32:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user\": {\n        \"id\": 536,\n        \"username\": \"wello\",\n        \"email\": \"wello@test.com\",\n        \"createdAt\": \"2026-01-08T20:32:56.210Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUzNiwibm9uY2UiOiIwLjZ0MjF0N3JoeTZuIiwiaWF0IjoxNzY3ODk3MTc2LCJleHAiOjE3Njg1MDE5NzZ9.UtxOrfKkTbppw_JZEhyOFnBwq5KsBioRInXaJHci5o4\"\n}"
+						},
+						{
+							"name": "duplicate register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"wello\",\r\n  \"email\": \"wello@test.com\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "44"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:45:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Username or email already exists\"\n}"
+						},
+						{
+							"name": "missing username",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"wello@test.com\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:51:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"username: Username is required\"\n}"
+						},
+						{
+							"name": "missing email",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"wello\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:53:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"email: Email is required\"\n}"
+						},
+						{
+							"name": "missing password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"wello\",\r\n  \"email\": \"wello@test.com\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:54:02 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"password: Password is required\"\n}"
+						},
+						{
+							"name": "invalid email format",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"wello\",\r\n  \"email\": \"wello@test\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:54:40 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"email: Invalid email format\"\n}"
+						}
+					]
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usernameOrEmail\": \"walidmoussa00@gmail.com\",\r\n  \"password\": \"walid123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "# Login Endpoint\n\n## Overview\nThis endpoint authenticates users and initiates a session. Users can log in using either their username or email address along with their password. Upon successful authentication, the server returns authentication credentials that can be used for subsequent API requests.\n\n## Request Details\n\n### HTTP Method\n`POST`\n\n### Endpoint URL\n```\nhttp://localhost:3000/auth/login\n```\n\n### Request Body Parameters\n\nThe request accepts a JSON payload with the following fields:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `usernameOrEmail` | string | Yes | The user's username or email address used for authentication |\n| `password` | string | Yes | The user's password |\n\n#### Example Request Body\n```json\n{\n  \"usernameOrEmail\": \"walidmoussa00@gmail.com\",\n  \"password\": \"walid123\"\n}\n```\n\n## Response Format\n\n### Successful Authentication (200 OK)\nWhen authentication is successful, the server returns user details and authentication tokens.\n\n**Example Response:**\n```json\n{\n  \"success\": true,\n  \"user\": {\n    \"id\": \"user_id\",\n    \"username\": \"username\",\n    \"email\": \"user@example.com\"\n  },\n  \"token\": \"jwt_token_here\"\n}\n```\n\n### Failed Authentication (401 Unauthorized)\nWhen credentials are invalid, the server returns an error message.\n\n**Example Response:**\n```json\n{\n  \"success\": false,\n  \"message\": \"Invalid username/email or password\"\n}\n```\n\n## Status Codes\n\n| Status Code | Description |\n|-------------|-------------|\n| **200 OK** | Authentication successful. User credentials are valid and a session/token has been created. |\n| **400 Bad Request** | Invalid request format or missing required fields. |\n| **401 Unauthorized** | Authentication failed. The provided username/email or password is incorrect. |\n| **429 Too Many Requests** | Rate limit exceeded. Too many login attempts in a short period. |\n| **500 Internal Server Error** | Server error occurred during authentication process. |\n\n## Authentication Flow\n\n1. **User submits credentials**: The client sends a POST request with `usernameOrEmail` and `password` in the request body.\n2. **Server validates credentials**: The server checks if the provided credentials match a user account in the database.\n3. **Token generation**: If credentials are valid, the server generates an authentication token (typically JWT).\n4. **Response**: The server returns the token and user information to the client.\n5. **Subsequent requests**: The client includes the token in the `Authorization` header for authenticated API calls.\n\n## Saved Examples\n\nThis request includes the following saved examples demonstrating different scenarios:\n\n- **successful login with username**: Demonstrates a successful authentication with valid credentials\n- **wrong username/email**: Demonstrates a failed authentication attempt with invalid credentials\n\n## Usage Notes & Best Practices\n\n### Security Considerations\n- **HTTPS Required**: Always use HTTPS in production to encrypt credentials in transit\n- **Password Requirements**: Ensure passwords meet minimum security requirements (length, complexity)\n- **Rate Limiting**: Implement rate limiting to prevent brute force attacks\n- **Account Lockout**: Consider implementing account lockout after multiple failed attempts\n\n### Implementation Tips\n- Store the returned authentication token securely (e.g., in httpOnly cookies or secure storage)\n- Include the token in subsequent API requests using the `Authorization` header: `Authorization: Bearer <token>`\n- Handle token expiration gracefully by implementing token refresh logic\n- Never log or expose passwords in error messages or logs\n\n### Error Handling\n- Provide generic error messages for failed login attempts to avoid revealing whether a username/email exists\n- Implement proper client-side validation before sending the request\n- Handle network errors and timeouts appropriately\n\n### Testing\n- Test with both username and email formats for the `usernameOrEmail` field\n- Verify behavior with incorrect credentials\n- Test rate limiting and account lockout mechanisms\n- Validate token expiration and refresh flows"
+					},
+					"response": [
+						{
+							"name": "successful login with username",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"usernameOrEmail\": \"wello\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "290"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:55:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user\": {\n        \"id\": 536,\n        \"username\": \"wello\",\n        \"email\": \"wello@test.com\",\n        \"createdAt\": \"2026-01-08T20:32:56.210Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUzNiwibm9uY2UiOiIwLnJvczh3ZG15aHNzIiwiaWF0IjoxNzY3ODk4NTI3LCJleHAiOjE3Njg1MDMzMjd9.ShUmHi1sUoS5gNbObHEZKpKa-KtJVdzqldIX5-8Q0_4\"\n}"
+						},
+						{
+							"name": "successful login with email",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"usernameOrEmail\": \"wello@test.com\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:56:13 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid credentials\"\n}"
+						},
+						{
+							"name": "wrong password",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"usernameOrEmail\": \"wello\",\r\n  \"password\": \"wello1233\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:55:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid credentials\"\n}"
+						},
+						{
+							"name": "wrong username/email",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"usernameOrEmail\": \"wrongemail@test.com\",\r\n  \"password\": \"wello123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "31"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 18:56:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid credentials\"\n}"
+						}
+					]
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "# Logout Endpoint\n\n## Overview\nThis endpoint handles user logout functionality for the book shop API. It terminates the current user session and invalidates the authentication token.\n\n## Authentication Requirements\nThis endpoint requires authentication via a valid token. The token should be included in the request (typically in headers or cookies). Without a valid token, the logout operation cannot be completed.\n\n## Expected Behavior\n\n### Successful Logout\nWhen a valid authentication token is provided, the endpoint will:\n- Invalidate the current session\n- Clear the authentication token\n- Return a success response\n\n### Missing or Invalid Token\nIf no token is provided or the token is invalid, the endpoint will:\n- Return an error response indicating authentication is required\n- Not perform any logout operation\n\n## Response Codes\n- **Success**: Returns a successful status when logout is completed\n- **Error**: Returns an error status when authentication token is missing or invalid\n\n## Examples\nThis request includes saved examples that demonstrate different scenarios:\n\n1. **successful logout** - Shows the expected request and response when a user successfully logs out with a valid token\n2. **no token** - Demonstrates the error response when attempting to logout without providing an authentication token\n\nRefer to these examples to understand the different behaviors and response formats for each scenario."
+					},
+					"response": [
+						{
+							"name": "successful logout",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "37"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 19:35:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Logged out successfully\"\n}"
+						},
+						{
+							"name": "wrong token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "25"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 19:35:40 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid token\"\n}"
+						},
+						{
+							"name": "no token",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/logout",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 19:35:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"No token provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "forgot password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NzksIm5vbmNlIjoiMC5uaWRid3pidmJ3YiIsImlhdCI6MTc2ODIzNjkzNCwiZXhwIjoxNzY4ODQxNzM0fQ.0Ns-UkQhQVvEoQfKjFkPfrUgxURvedjJ_6M7L8IvLsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"wello@test.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						},
+						"description": "# Forgot Password\n\n## Overview\n\nThis endpoint initiates the password reset process for users who have forgotten their password. When called, it generates and sends a One-Time Password (OTP) to the user's registered email address, which can then be used to verify their identity and reset their password.\n\n## Endpoint Details\n\n- **URL**: `http://localhost:3000/auth/forgot-password`\n    \n- **Method**: `POST`\n    \n- **Content-Type**: `application/json`\n    \n\n## Request Body\n\nThe request requires a JSON payload with the following parameter:\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `email` | string | Yes | The email address associated with the account |\n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"wello@test.com\"\n}\n\n ```\n\n## Response Behavior\n\n### Success Response\n\nWhen the request is successful, the server will:\n\n- Generate a secure OTP\n    \n- Send the OTP in the console (in real life it would be sent to email)\n    \n- Return a success confirmation\n    \n\nThe saved example \"successful otp sent\" demonstrates the expected successful response.\n\n### Error Scenarios\n\nPossible error responses may include:\n\n- **400 Bad Request**: Invalid email format or missing email parameter\n    \n- **404 Not Found**: Email address not registered in the system\n    \n- **429 Too Many Requests**: Rate limit exceeded for OTP requests\n    \n- **500 Internal Server Error**: Server-side error during OTP generation or email sending\n    \n\n## Example Usage\n\n``` javascript\n// Using fetch API\nfetch('http://localhost:3000/auth/forgot-password', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({\n    email: 'user@example.com'\n  })\n})\n.then(response => response.json())\n.then(data => console.log('OTP sent successfully:', data))\n.catch(error => console.error('Error:', error));\n\n ```\n\n## Notes\n\n- **Security**: OTPs are typically time-limited (e.g., valid for 10-15 minutes) and single-use only\n    \n- **Rate Limiting**: Multiple requests for the same email may be rate-limited to prevent abuse\n    \n- **Next Steps**: After receiving the OTP, users should use it with a separate password reset endpoint to complete the password change process\n    \n- **Privacy**: The endpoint should not reveal whether an email exists in the system to prevent user enumeration attacks"
+					},
+					"response": [
+						{
+							"name": "successful otp sent",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"wello@test.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/forgot-password",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"forgot-password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "72"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 19:19:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"If an account exists with this email, an OTP has been sent\"\n}"
+						}
+					]
+				},
+				{
+					"name": "reset password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NzksIm5vbmNlIjoiMC5uaWRid3pidmJ3YiIsImlhdCI6MTc2ODIzNjkzNCwiZXhwIjoxNzY4ODQxNzM0fQ.0Ns-UkQhQVvEoQfKjFkPfrUgxURvedjJ_6M7L8IvLsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"wello@test.com\",\r\n    \"otp\":123456,\r\n    \"newPassword\":\"newPassword\",\r\n    \"confirmPassword\":\"newPassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/reset-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful password reset",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"wello@test.com\",\r\n    \"otp\":123456,\r\n    \"newPassword\":\"newPassword\",\r\n    \"confirmPassword\":\"newPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/reset-password",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "41"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 19:35:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Password reset successfully\"\n}"
+						},
+						{
+							"name": "otp not 6 digits",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"wello@test.com\",\r\n    \"otp\":23452345,\r\n    \"newPassword\":\"newPassword\",\r\n    \"confirmPassword\":\"newPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/reset-password",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "43"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 19:33:15 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"otp: OTP must be a 6-digit code\"\n}"
+						},
+						{
+							"name": "wrong otp",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"wello@test.com\",\r\n    \"otp\":321321,\r\n    \"newPassword\":\"newPassword\",\r\n    \"confirmPassword\":\"newPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/auth/reset-password",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"auth",
+										"reset-password"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "34"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 19:34:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid or expired OTP\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Profiles",
+			"item": [
+				{
+					"name": "get profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcwMSwibm9uY2UiOiIwLmQybzI4eDlqZzh3IiwiaWF0IjoxNzY3OTA0MzQxLCJleHAiOjE3Njg1MDkxNDF9.epf7RYDwR4gchC_hYKJjn6ZIpF7fzNHTUw87HwxJyMc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile"
+							]
+						},
+						"description": "# Overview\n\nThis endpoint retrieves the authenticated user's profile information. It returns details about the currently logged-in user based on the provided authentication token.\n\n## Authentication\n\n**Required:** Yes\n\nThis endpoint requires authentication via a bearer token or similar authentication mechanism. The request must include valid authentication credentials in the headers.\n\n- **Authentication Type:** Token-based (Bearer token or similar)\n- **Header:** Typically `Authorization: Bearer <token>` or similar format\n- **Behavior:** Requests without valid authentication will be rejected with an error response\n\n## Response\n\n### Success Response\n\n**Status Code:** `200 OK`\n\nReturns the user's profile information including relevant user details.\n\n**Response Format:** JSON\n\n```json\n{\n  \"id\": \"user_id\",\n  \"name\": \"User Name\",\n  \"email\": \"user@example.com\",\n  // Additional profile fields\n}\n```\n\n### Error Responses\n\n#### Authentication Failure\n\n**Status Code:** `401 Unauthorized` or `403 Forbidden`\n\nReturned when the authentication token is invalid, expired, or missing.\n\n**Response Format:** JSON\n\n```json\n{\n  \"error\": \"Invalid or expired token\",\n  \"message\": \"Authentication failed\"\n}\n```\n\n## Examples\n\nThis endpoint includes saved examples demonstrating different scenarios:\n\n1. **Successful Response** - Shows a valid request with proper authentication returning user profile data\n2. **Wrong Token** - Demonstrates authentication failure when an invalid token is provided\n\n## Usage Notes\n\n- Ensure the authentication token is valid and not expired before making the request\n- The profile information returned is specific to the authenticated user\n- This is a read-only endpoint that does not modify any user data\n- The endpoint is typically used after successful login to retrieve user details for display or session management"
+					},
+					"response": [
+						{
+							"name": "successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "156"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:32:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 701,\n        \"username\": \"wello\",\n        \"email\": \"wello@test.com\",\n        \"createdAt\": \"2026-01-08T22:31:45.029Z\",\n        \"updatedAt\": \"2026-01-08T22:31:45.029Z\"\n    }\n}"
+						},
+						{
+							"name": "wrong token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "25"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:33:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid token\"\n}"
+						},
+						{
+							"name": "no token",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:33:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"No token provided\"\n}"
+						}
+					]
+				},
+				{
+					"name": "update profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"user\",\r\n  \"email\": \"user@test.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/updateProfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"updateProfile"
+							]
+						},
+						"description": "# Update User Profile\n\n## Overview\nThis endpoint allows you to update user profile information including username and email address. The endpoint accepts a JSON payload with the fields to be updated.\n\n## Endpoint Details\n- **Method:** `PUT`\n- **URL:** `http://localhost:3000/updateProfile`\n\n## Request Body\nThe request body should be in JSON format with the following fields:\n\n```json\n{\n  \"username\": \"user\",\n  \"email\": \"user@test.com\"\n}\n```\n\n### Fields\n- `username` (string): The new username for the user profile\n- `email` (string): The new email address for the user profile\n\n## Expected Behavior\n\n### Successful Update\nWhen valid username and email values are provided, the endpoint will successfully update the user's profile information. See the \"successful update username, email\" example for reference.\n\n### Password Updates Not Supported\n**Important:** This endpoint does not support password updates. Any attempts to update the password through this endpoint will not be processed. See the \"doesn't update password\" example for reference.\n\n## Usage Notes\n- Ensure the request body is properly formatted as JSON\n- Both username and email can be updated in a single request\n- For password changes, use a different endpoint dedicated to password management"
+					},
+					"response": [
+						{
+							"name": "successful update username, email",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"user\",\r\n  \"email\": \"user@test.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "154"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:41:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 701,\n        \"username\": \"user\",\n        \"email\": \"user@test.com\",\n        \"createdAt\": \"2026-01-08T22:31:45.029Z\",\n        \"updatedAt\": \"2026-01-08T20:41:11.285Z\"\n    }\n}"
+						},
+						{
+							"name": "success update username",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"updateUsername\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "164"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:42:03 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 701,\n        \"username\": \"updateUsername\",\n        \"email\": \"user@test.com\",\n        \"createdAt\": \"2026-01-08T22:31:45.029Z\",\n        \"updatedAt\": \"2026-01-08T20:42:03.343Z\"\n    }\n}"
+						},
+						{
+							"name": "success update email",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"updateEmail@guc.edu.eg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "173"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:42:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 701,\n        \"username\": \"updateUsername\",\n        \"email\": \"updateEmail@guc.edu.eg\",\n        \"createdAt\": \"2026-01-08T22:31:45.029Z\",\n        \"updatedAt\": \"2026-01-08T20:42:35.706Z\"\n    }\n}"
+						},
+						{
+							"name": "wrong email format",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"updateEmail@wrongFromat\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:43:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"email: Invalid email format\"\n}"
+						},
+						{
+							"name": "doesn't update password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\" : \"newPassword\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "173"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:44:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 701,\n        \"username\": \"updateUsername\",\n        \"email\": \"updateEmail@guc.edu.eg\",\n        \"createdAt\": \"2026-01-08T22:31:45.029Z\",\n        \"updatedAt\": \"2026-01-08T20:44:14.105Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "change password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcwMSwibm9uY2UiOiIwLmQybzI4eDlqZzh3IiwiaWF0IjoxNzY3OTA0MzQxLCJleHAiOjE3Njg1MDkxNDF9.epf7RYDwR4gchC_hYKJjn6ZIpF7fzNHTUw87HwxJyMc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\" : \"passwor123\",\r\n    \"newPassword\" : \"password123\",\r\n    \"confirmPassword\" : \"password123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/profile/changePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"profile",
+								"changePassword"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful change password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"currentPassword\" : \"wello123\",\r\n    \"newPassword\" : \"password0\",\r\n    \"confirmPassword\" : \"password0\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:55:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Password changed successfully\"\n}"
+						},
+						{
+							"name": "wrong current password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"currentPassword\" : \"wrong password\",\r\n    \"newPassword\" : \"password1\",\r\n    \"confirmPassword\" : \"password1\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:56:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error\": \"Current password is incorrect\"\n}"
+						},
+						{
+							"name": "wrong confirm password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"currentPassword\" : \"password0\",\r\n    \"newPassword\" : \"password1\",\r\n    \"confirmPassword\" : \"password2\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "50"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:56:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"confirmPassword: Passwords don't match\"\n}"
+						},
+						{
+							"name": "missing all data",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "143"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:58:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"currentPassword: Current password is required, newPassword: New password is required, confirmPassword: Confirm password is required\"\n}"
+						},
+						{
+							"name": "missing confirm password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"currentPassword\" : \"passwor123\",\r\n    \"newPassword\" : \"password123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:58:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"confirmPassword: Confirm password is required\"\n}"
+						},
+						{
+							"name": "missing new password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"currentPassword\" : \"passwor123\",\r\n    \"confirmPassword\" : \"password123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "49"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:58:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"newPassword: New password is required\"\n}"
+						},
+						{
+							"name": "missing current password",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"newPassword\" : \"password123\",\r\n    \"confirmPassword\" : \"password123\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/profile/changePassword",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"profile",
+										"changePassword"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 20:59:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"currentPassword: Current password is required\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "myBooks",
+			"item": [
+				{
+					"name": "create book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/book",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"book"
+							]
+						},
+						"description": "# Create Book\n\n## Overview\nThis endpoint creates a new book in the bookshop system. Use this API to add books to your inventory with details such as title, author, price, and optional tags for categorization.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `http://localhost:3000/book`\n\n## Request Body Parameters\nThe request accepts a JSON payload with the following fields:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `title` | string | Yes | The title of the book |\n| `author` | string | Yes | The author's name |\n| `price` | number | Yes | The price of the book |\n| `isbn` | string | No | International Standard Book Number |\n| `tags` | array | No | Array of tags for categorizing the book (e.g., [\"fiction\", \"bestseller\"]) |\n| `description` | string | No | A brief description of the book |\n| `publishedDate` | string | No | Publication date of the book |\n\n### Example Request Body\n```json\n{\n  \"title\": \"The Great Novel\",\n  \"author\": \"John Doe\",\n  \"price\": 29.99,\n  \"isbn\": \"978-3-16-148410-0\",\n  \"tags\": [\"fiction\", \"bestseller\"],\n  \"description\": \"An amazing story about...\"\n}\n```\n\n## Responses\n\n### Success Response (201 Created)\nWhen a book is successfully created, the API returns the created book object with a unique ID.\n\n**Examples:**\n- **Successful create with tags**: Returns the complete book object including tags\n- **Successful response**: Returns the basic book object\n\n### Error Responses\n- **400 Bad Request**: Invalid request body or missing required fields\n- **401 Unauthorized**: Authentication required\n- **500 Internal Server Error**: Server-side error\n\n## Authentication\nThis endpoint may require authentication. Ensure you include the appropriate authentication headers (e.g., Bearer token) in your request.\n\n## Usage Notes\n- All required fields must be provided in the request body\n- Tags are optional but recommended for better book categorization\n- The API will generate a unique ID for each created book\n- Check the saved examples (\"successful create with tags\" and \"successful response\") for detailed response formats"
+					},
+					"response": [
+						{
+							"name": "successful response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Great Gatsby2\",\r\n  \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\r\n  \"price\": 12.99,\r\n  \"category\": \"Fiction\",\r\n  \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\r\n  \"author\": \"shakspere\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "380"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 01:15:33 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 4,\n        \"title\": \"The Great Gatsby2\",\n        \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n        \"price\": \"12.99\",\n        \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"shakspere\",\n        \"creatorId\": 768,\n        \"createdAt\": \"2026-01-09T03:15:33.074Z\",\n        \"updatedAt\": \"2026-01-09T03:15:33.074Z\"\n    }\n}"
+						},
+						{
+							"name": "successful create with tags",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The catastrophy\",\r\n  \"description\": \"A classic novel of the Jazz Age\",\r\n  \"price\": 12.99,\r\n  \"category\": \"Fiction\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"thumbnail\": \"https://example.com/catastrophy.jpg\",\r\n  \"tags\": [\"classic\", \"fiction\", \"romance\", \"1920s\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "369"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 15:50:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The catastrophy\",\n        \"description\": \"A classic novel of the Jazz Age\",\n        \"price\": \"12.99\",\n        \"thumbnail\": \"https://example.com/catastrophy.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [\n            \"classic\",\n            \"fiction\",\n            \"romance\",\n            \"1920s\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "negative price",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Great Gatsby2\",\r\n  \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\r\n  \"price\": -1,\r\n  \"category\": \"Fiction\",\r\n  \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\r\n  \"author\": \"shakspere\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 01:16:17 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"price: Price must be greater than 0\"\n}"
+						},
+						{
+							"name": "duplicate titles",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Great Gatsby2\",\r\n  \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\r\n  \"price\": 12,\r\n  \"category\": \"Fiction\",\r\n  \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\r\n  \"author\": \"shakspere\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 01:16:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error\": \"A book with this title already exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get my books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3ODAsIm5vbmNlIjoiMC5xdjQzcXEzNDYzYSIsImlhdCI6MTc2ODI1NzY0MywiZXhwIjoxNzY4ODYyNDQzfQ.hRxKNt7b4-zqvWh2Y8BBhxH-Bc41Tm5XTG2TBO8r1bs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/myBooks?category=horror",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"myBooks"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "horror"
+								}
+							]
+						},
+						"description": "# Get My Books\n\n## Overview\nThis endpoint retrieves a list of books belonging to the authenticated user. The results can be filtered and sorted using various query parameters to help users find specific books in their collection.\n\n## Query Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `category` | string | No | Filter books by category (e.g., \"horror\", \"fiction\", \"non-fiction\") |\n| `minPrice` | number | No | Filter books with a price greater than or equal to this value |\n| `maxPrice` | number | No | Filter books with a price less than or equal to this value |\n\n## Filtering Capabilities\n\n- **Category Filtering**: Use the `category` parameter to retrieve only books from a specific genre or category\n- **Price Range Filtering**: Combine `minPrice` and `maxPrice` to find books within a specific price range\n- **Multiple Filters**: Query parameters can be combined to create more specific filters (e.g., horror books between $10 and $60)\n\n## Response\n\nThe endpoint returns a list of books matching the specified filters. Each book object typically includes:\n- Book details (title, author, ISBN, etc.)\n- Category information\n- Pricing information\n- Availability status\n\n## Usage Examples\n\n### Example 1: Get Books by Category\n```\nGET /myBooks?category=horror\n```\nRetrieves all horror books in the user's collection.\n\n### Example 2: Filter by Price Range\n```\nGET /myBooks?minPrice=10&maxPrice=60\n```\nRetrieves books priced between $10 and $60.\n\n### Example 3: Combined Filters with Sorting\n```\nGET /myBooks?category=horror&minPrice=30&maxPrice=60\n```\nRetrieves horror books priced between $30 and $60, with results sorted in descending order.\n\n## Saved Examples\n\n- **\"get my books\"**: Basic request to retrieve the user's book collection\n- **\"sort descending\"**: Demonstrates sorting functionality with filters applied"
+					},
+					"response": [
+						{
+							"name": "successful pagination",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=2&limit=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "356"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 01:40:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 21,\n            \"title\": \"8 rules of power\",\n            \"description\": \"A psychology book \",\n            \"price\": \"50.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"power shelby\",\n            \"category\": \"psychology\",\n            \"createdAt\": \"2026-01-09T03:38:22.680Z\",\n            \"updatedAt\": \"2026-01-09T03:38:22.680Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 2,\n        \"limit\": 1,\n        \"total\": 3,\n        \"totalPages\": 3\n    }\n}"
+						},
+						{
+							"name": "successful fetch all books",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "985"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 01:41:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 20,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"createdAt\": \"2026-01-09T03:37:22.645Z\",\n            \"updatedAt\": \"2026-01-09T03:37:22.645Z\"\n        },\n        {\n            \"id\": 21,\n            \"title\": \"8 rules of power\",\n            \"description\": \"A psychology book \",\n            \"price\": \"50.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"power shelby\",\n            \"category\": \"psychology\",\n            \"createdAt\": \"2026-01-09T03:38:22.680Z\",\n            \"updatedAt\": \"2026-01-09T03:38:22.680Z\"\n        },\n        {\n            \"id\": 22,\n            \"title\": \"house of horror\",\n            \"description\": \" horror book not for the weak hearted\",\n            \"price\": \"25.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"ahmed younis\",\n            \"category\": \"horrow\",\n            \"createdAt\": \"2026-01-09T03:39:19.152Z\",\n            \"updatedAt\": \"2026-01-09T03:39:19.152Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 3,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "successful search by title",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=1&limit=3&title=house of horror",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										},
+										{
+											"key": "title",
+											"value": "house of horror"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "370"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 13:36:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 22,\n            \"title\": \"house of horror\",\n            \"description\": \" horror book not for the weak hearted\",\n            \"price\": \"25.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"ahmed younis\",\n            \"category\": \"horrow\",\n            \"createdAt\": \"2026-01-09T03:39:19.152Z\",\n            \"updatedAt\": \"2026-01-09T03:39:19.152Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 3,\n        \"total\": 1,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "filter by price",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks?minPrice=10&maxPrice=60",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "minPrice",
+											"value": "10"
+										},
+										{
+											"key": "maxPrice",
+											"value": "60"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "733"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 22:42:36 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1186,\n            \"title\": \"Horror House\",\n            \"description\": \"a horror novel about a haunted house\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/Horror-House.jpg\",\n            \"author\": \"Ahmed Younis\",\n            \"category\": \"Horror\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:39:51.217Z\",\n            \"updatedAt\": \"2026-01-10T19:39:51.217Z\"\n        },\n        {\n            \"id\": 1185,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:47.687Z\",\n            \"updatedAt\": \"2026-01-10T19:37:47.687Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 2,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "sort descending",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=1&limit=3&sort=desc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										},
+										{
+											"key": "sort",
+											"value": "desc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1017"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 16:25:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 800,\n            \"title\": \"torab el maas\",\n            \"description\": \"a really intertaining drama book\",\n            \"price\": \"50.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"mohamed hossam\",\n            \"category\": \"drama\",\n            \"createdAt\": \"2026-01-09T18:12:44.757Z\",\n            \"updatedAt\": \"2026-01-09T18:12:44.757Z\"\n        },\n        {\n            \"id\": 799,\n            \"title\": \"house of horror\",\n            \"description\": \" horror book not for the weak hearted\",\n            \"price\": \"25.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"ahmed younis\",\n            \"category\": \"horrow\",\n            \"createdAt\": \"2026-01-09T18:10:45.786Z\",\n            \"updatedAt\": \"2026-01-09T18:10:45.786Z\"\n        },\n        {\n            \"id\": 801,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"100.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"Roald Dahl\",\n            \"category\": \"fiction\",\n            \"createdAt\": \"2026-01-09T18:17:19.472Z\",\n            \"updatedAt\": \"2026-01-09T18:17:19.472Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 3,\n        \"total\": 3,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "get my books",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=1&limit=3&sort=asc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										},
+										{
+											"key": "sort",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1017"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 16:25:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 800,\n            \"title\": \"torab el maas\",\n            \"description\": \"a really intertaining drama book\",\n            \"price\": \"50.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"mohamed hossam\",\n            \"category\": \"drama\",\n            \"createdAt\": \"2026-01-09T18:12:44.757Z\",\n            \"updatedAt\": \"2026-01-09T18:12:44.757Z\"\n        },\n        {\n            \"id\": 799,\n            \"title\": \"house of horror\",\n            \"description\": \" horror book not for the weak hearted\",\n            \"price\": \"25.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"ahmed younis\",\n            \"category\": \"horrow\",\n            \"createdAt\": \"2026-01-09T18:10:45.786Z\",\n            \"updatedAt\": \"2026-01-09T18:10:45.786Z\"\n        },\n        {\n            \"id\": 801,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"100.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"Roald Dahl\",\n            \"category\": \"fiction\",\n            \"createdAt\": \"2026-01-09T18:17:19.472Z\",\n            \"updatedAt\": \"2026-01-09T18:17:19.472Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 3,\n        \"total\": 3,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "sort ascendingly",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=1&limit=3&sort=asc",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										},
+										{
+											"key": "sort",
+											"value": "asc"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1017"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 16:26:30 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 801,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"100.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"Roald Dahl\",\n            \"category\": \"fiction\",\n            \"createdAt\": \"2026-01-09T18:17:19.472Z\",\n            \"updatedAt\": \"2026-01-09T18:17:19.472Z\"\n        },\n        {\n            \"id\": 799,\n            \"title\": \"house of horror\",\n            \"description\": \" horror book not for the weak hearted\",\n            \"price\": \"25.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"ahmed younis\",\n            \"category\": \"horrow\",\n            \"createdAt\": \"2026-01-09T18:10:45.786Z\",\n            \"updatedAt\": \"2026-01-09T18:10:45.786Z\"\n        },\n        {\n            \"id\": 800,\n            \"title\": \"torab el maas\",\n            \"description\": \"a really intertaining drama book\",\n            \"price\": \"50.00\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"mohamed hossam\",\n            \"category\": \"drama\",\n            \"createdAt\": \"2026-01-09T18:12:44.757Z\",\n            \"updatedAt\": \"2026-01-09T18:12:44.757Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 3,\n        \"total\": 3,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "searching non existing book",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks?page=1&limit=3&title=non existing book",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										},
+										{
+											"key": "title",
+											"value": "non existing book"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "85"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 09 Jan 2026 13:37:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 3,\n        \"total\": 0,\n        \"totalPages\": 0\n    }\n}"
+						},
+						{
+							"name": "filter by category",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/myBooks?category=horror",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "horror"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "379"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 22:43:32 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1186,\n            \"title\": \"Horror House\",\n            \"description\": \"a horror novel about a haunted house\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/Horror-House.jpg\",\n            \"author\": \"Ahmed Younis\",\n            \"category\": \"Horror\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:39:51.217Z\",\n            \"updatedAt\": \"2026-01-10T19:39:51.217Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 1,\n        \"totalPages\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "update book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NzksIm5vbmNlIjoiMC42cXhhemh2cG83dCIsImlhdCI6MTc2ODIzNDYxMiwiZXhwIjoxNzY4ODM5NDEyfQ.9BpV4Vz1PFQVmNdqnEa2hR1ZV9eN30EuBU6iLFHKHOs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": 15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/myBooks/1193",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"myBooks",
+								"1193"
+							]
+						},
+						"description": "# Endpoint Overview\n\nThis endpoint updates an existing book's information in the bookshop catalog. Use this endpoint to modify any combination of book properties including title, description, pricing, author information, categorization, and tags.\n\n## HTTP Method\n\n**PUT** `http://localhost:3000/myBooks/{bookId}`\n\nUpdates a specific book identified by its unique `bookId` in the URL path.\n\n---\n\n## Request Parameters\n\n### Path Parameters\n- **bookId** (required): The unique identifier of the book to update (e.g., `1193`)\n\n### Request Body (JSON)\n\nAll fields are optional - include only the properties you want to update:\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| `title` | string | The book's title |\n| `description` | string | A brief description or synopsis of the book |\n| `price` | number | The book's price in the default currency (e.g., 15.99) |\n| `thumbnail` | string | URL to the book's cover image |\n| `author` | string | The book's author name |\n| `category` | string | The genre or category (e.g., \"Fiction\", \"Non-Fiction\") |\n| `tags` | array of strings | Keywords or tags for categorization and search (e.g., [\"classic\", \"fiction\"]) |\n\n---\n\n## Response Codes\n\n| Status Code | Description |\n|-------------|-------------|\n| **200 OK** | Book successfully updated. Returns the updated book object. |\n| **400 Bad Request** | Invalid request body or malformed JSON. Check your payload format. |\n| **404 Not Found** | Book with the specified ID does not exist. |\n| **422 Unprocessable Entity** | Validation error - one or more fields contain invalid data. |\n| **500 Internal Server Error** | Server error occurred while processing the request. |\n\n---\n\n## Examples\n\n### Example 1: Update Title and Description\nUpdate the book's title and description while keeping other properties unchanged.\n\n```json\n{\n  \"title\": \"The Catastrophe - Definitive Edition\",\n  \"description\": \"A fully revised Jazz Age classic.\"\n}\n```\n\n### Example 2: Add or Update Tags\nAdd categorization tags to improve searchability and organization.\n\n```json\n{\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\n}\n```\n\n### Example 3: Update Price\nAdjust the book's pricing.\n\n```json\n{\n  \"price\": 15.99\n}\n```\n\n### Example 4: Complete Update\nUpdate all book properties in a single request.\n\n```json\n{\n  \"title\": \"The Catastrophe - Definitive Edition\",\n  \"description\": \"A fully revised Jazz Age classic.\",\n  \"price\": 15.99,\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\n  \"author\": \"F. Scott Fitzgerald\",\n  \"category\": \"Fiction\",\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\n}\n```"
+					},
+					"response": [
+						{
+							"name": "successful full update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": 15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "411"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:22:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe - Definitive Edition\",\n        \"description\": \"A fully revised Jazz Age classic.\",\n        \"price\": \"15.99\",\n        \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [\n            \"classic\",\n            \"fiction\",\n            \"jazz age\",\n            \"20th century\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "successfully update title and desc",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Catastrophe (Revised)\",\r\n  \"description\": \"Updated description only\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "372"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:17:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe (Revised)\",\n        \"description\": \"Updated description only\",\n        \"price\": \"12.99\",\n        \"thumbnail\": \"https://example.com/catastrophy.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [\n            \"classic\",\n            \"fiction\",\n            \"romance\",\n            \"1920s\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "successfully update price and thumb.",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"price\": 14.5,\r\n  \"thumbnail\": \"https://example.com/catastrophe-new.jpg\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "376"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:18:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe (Revised)\",\n        \"description\": \"Updated description only\",\n        \"price\": \"14.50\",\n        \"thumbnail\": \"https://example.com/catastrophe-new.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [\n            \"classic\",\n            \"fiction\",\n            \"romance\",\n            \"1920s\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "update category and author",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"category\": \"Literature\",\r\n  \"author\": \"Francis S. Fitzgerald\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "371"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:21:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe (Revised)\",\n        \"description\": \"Updated description only\",\n        \"price\": \"14.50\",\n        \"thumbnail\": \"https://example.com/catastrophe-new.jpg\",\n        \"category\": \"Literature\",\n        \"author\": \"Francis S. Fitzgerald\",\n        \"tags\": [\n            \"classic\",\n            \"drama\",\n            \"tragedy\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "successfully clear tags",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"tags\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "339"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:19:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe (Revised)\",\n        \"description\": \"Updated description only\",\n        \"price\": \"14.50\",\n        \"thumbnail\": \"https://example.com/catastrophe-new.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "successfully add tags",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"tags\": [\"drama\", \"tragedy\", \"classic\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "366"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:19:52 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The Catastrophe (Revised)\",\n        \"description\": \"Updated description only\",\n        \"price\": \"14.50\",\n        \"thumbnail\": \"https://example.com/catastrophe-new.jpg\",\n        \"category\": \"Fiction\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"tags\": [\n            \"drama\",\n            \"tragedy\",\n            \"classic\"\n        ],\n        \"creatorId\": 1779,\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n    }\n}"
+						},
+						{
+							"name": "negative price",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": -15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:23:30 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"price: Price must be greater than 0\"\n}"
+						}
+					]
+				},
+				{
+					"name": "delete book",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NzksIm5vbmNlIjoiMC5uaWRid3pidmJ3YiIsImlhdCI6MTc2ODIzNjkzNCwiZXhwIjoxNzY4ODQxNzM0fQ.0Ns-UkQhQVvEoQfKjFkPfrUgxURvedjJ_6M7L8IvLsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": 15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/myBooks/1193",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"myBooks",
+								"1193"
+							]
+						},
+						"description": "# Delete Book\n\nThis endpoint deletes a book from the authenticated user's collection.\n\n## Authentication\n\nThis endpoint requires authentication. You must include a valid authentication token in your request headers.\n\n- **Required**: `token` variable must be set with a valid authentication token\n\n## Path Parameters\n\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| `bookId` | string/number | The unique identifier of the book to delete (e.g., `1193` in `/myBooks/1193`) |\n\n## Response Scenarios\n\n### Successful Deletion (200 OK)\nWhen the authenticated user successfully deletes their own book, the API returns a success response confirming the deletion.\n\n**Example**: See the \"successfully delete book\" example for the expected response format.\n\n### Unauthorized Deletion (403 Forbidden or 401 Unauthorized)\nWhen a user attempts to delete a book that doesn't belong to them, the API returns an error response.\n\n**Example**: See the \"delete someone else's book\" example for the expected error response.\n\n## Permissions\n\n- Users can **only delete books that belong to them**\n- Attempting to delete another user's book will result in an authorization error\n- The book ID must exist in the system and be associated with the authenticated user's account\n\n## Notes\n\n- This is a destructive operation and cannot be undone\n- Ensure the correct book ID is provided to avoid accidental deletions\n- Always verify ownership before attempting deletion"
+					},
+					"response": [
+						{
+							"name": "delete someone else's book",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": 15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1185",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1185"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "85"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:55:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error\": \"Book not found or you do not have permission to delete it\"\n}"
+						},
+						{
+							"name": "successfully delete book",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"The Catastrophe - Definitive Edition\",\r\n  \"description\": \"A fully revised Jazz Age classic.\",\r\n  \"price\": 15.99,\r\n  \"thumbnail\": \"https://example.com/catastrophe-definitive.jpg\",\r\n  \"author\": \"F. Scott Fitzgerald\",\r\n  \"category\": \"Fiction\",\r\n  \"tags\": [\"classic\", \"fiction\", \"jazz age\", \"20th century\"]\r\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/myBooks/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"myBooks",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "54"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 16:56:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Book deleted successfully\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "books",
+			"item": [
+				{
+					"name": "list all books",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NzksIm5vbmNlIjoiMC5uaWRid3pidmJ3YiIsImlhdCI6MTc2ODIzNjkzNCwiZXhwIjoxNzY4ODQxNzM0fQ.0Ns-UkQhQVvEoQfKjFkPfrUgxURvedjJ_6M7L8IvLsY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/books?minPrice=50&maxPrice=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"books"
+							],
+							"query": [
+								{
+									"key": "minPrice",
+									"value": "50"
+								},
+								{
+									"key": "maxPrice",
+									"value": "10"
+								}
+							]
+						},
+						"description": "# Overview\n\nThis endpoint retrieves a list of books from the bookshop API. It supports filtering books based on price range and category, allowing clients to query the catalog with specific criteria.\n\n## Query Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `minPrice` | number | No | Minimum price filter. Only returns books with a price greater than or equal to this value. Example values: `0`, `50` |\n| `maxPrice` | number | No | Maximum price filter. Only returns books with a price less than or equal to this value. Example values: `10`, `50` |\n| `category` | string | No | Filter books by category. Example values: `fiction` |\n\n## Example Usage Scenarios\n\n### 1. Get all books\n```\nGET http://localhost:3000/books\n```\nRetrieves all books without any filters.\n\n### 2. Filter by price range\n```\nGET http://localhost:3000/books?minPrice=0&maxPrice=50\n```\nReturns books priced between $0 and $50.\n\n### 3. Filter by category\n```\nGET http://localhost:3000/books?category=fiction\n```\nReturns only fiction books.\n\n### 4. Combine filters\n```\nGET http://localhost:3000/books?minPrice=10&maxPrice=30&category=fiction\n```\nReturns fiction books priced between $10 and $30.\n\n## Expected Response Format\n\nThe endpoint returns a JSON array of book objects. Each book object typically contains:\n\n```json\n[\n  {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"author\": \"string\",\n    \"price\": number,\n    \"category\": \"string\"\n  }\n]\n```\n\n**Note:** If `minPrice` is greater than `maxPrice`, the query will return an empty result set as no books can satisfy an impossible price range."
+					},
+					"response": [
+						{
+							"name": "successful list all books",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1761"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 15:50:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1193,\n            \"title\": \"The catastrophy\",\n            \"description\": \"A classic novel of the Jazz Age\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/catastrophy.jpg\",\n            \"author\": \"F. Scott Fitzgerald\",\n            \"category\": \"Fiction\",\n            \"tags\": [\n                \"classic\",\n                \"fiction\",\n                \"romance\",\n                \"1920s\"\n            ],\n            \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n            \"updatedAt\": \"2026-01-12T17:50:10.461Z\"\n        },\n        {\n            \"id\": 1188,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/willy-wonka.jpg\",\n            \"author\": \"random author\",\n            \"category\": \"fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:42:56.732Z\",\n            \"updatedAt\": \"2026-01-10T19:42:56.732Z\"\n        },\n        {\n            \"id\": 1186,\n            \"title\": \"Horror House\",\n            \"description\": \"a horror novel about a haunted house\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/Horror-House.jpg\",\n            \"author\": \"Ahmed Younis\",\n            \"category\": \"Horror\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:39:51.217Z\",\n            \"updatedAt\": \"2026-01-10T19:39:51.217Z\"\n        },\n        {\n            \"id\": 1185,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:47.687Z\",\n            \"updatedAt\": \"2026-01-10T19:37:47.687Z\"\n        },\n        {\n            \"id\": 1184,\n            \"title\": \"Pride and Prejudice\",\n            \"description\": \"a really deep theoretical book about psychology\",\n            \"price\": \"95.00\",\n            \"thumbnail\": \"https://example.com/images/pride-and-prejudice.jpg\",\n            \"author\": \"Jane Austen\",\n            \"category\": \"psychology\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:23.470Z\",\n            \"updatedAt\": \"2026-01-10T19:37:23.470Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 5,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "fetch book by title",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books?title=The Great Gatsby2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "The Great Gatsby2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "439"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 17:11:02 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1185,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:47.687Z\",\n            \"updatedAt\": \"2026-01-10T19:37:47.687Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 1,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "filtered by category",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books?category=fiction",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "fiction"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "816"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 21:52:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1185,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:47.687Z\",\n            \"updatedAt\": \"2026-01-10T19:37:47.687Z\"\n        },\n        {\n            \"id\": 1188,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/willy-wonka.jpg\",\n            \"author\": \"random author\",\n            \"category\": \"fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:42:56.732Z\",\n            \"updatedAt\": \"2026-01-10T19:42:56.732Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 2,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "filter by price",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books?minPrice=0&maxPrice=50",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									],
+									"query": [
+										{
+											"key": "minPrice",
+											"value": "0"
+										},
+										{
+											"key": "maxPrice",
+											"value": "50"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1110"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 22:16:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"id\": 1185,\n            \"title\": \"The Great Gatsby2\",\n            \"description\": \"A classic novel set in the Jazz Age exploring themes of wealth, love, and the American Dream.\",\n            \"price\": \"12.99\",\n            \"thumbnail\": \"https://example.com/images/great-gatsby.jpg\",\n            \"author\": \"shakspere\",\n            \"category\": \"Fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:37:47.687Z\",\n            \"updatedAt\": \"2026-01-10T19:37:47.687Z\"\n        },\n        {\n            \"id\": 1186,\n            \"title\": \"Horror House\",\n            \"description\": \"a horror novel about a haunted house\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/Horror-House.jpg\",\n            \"author\": \"Ahmed Younis\",\n            \"category\": \"Horror\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:39:51.217Z\",\n            \"updatedAt\": \"2026-01-10T19:39:51.217Z\"\n        },\n        {\n            \"id\": 1188,\n            \"title\": \"charly and the chocolate factory\",\n            \"description\": \"a fictionary book about a poor child that got a golden ticket to the willy wonka chocolate factory\",\n            \"price\": \"35.00\",\n            \"thumbnail\": \"https://example.com/images/willy-wonka.jpg\",\n            \"author\": \"random author\",\n            \"category\": \"fiction\",\n            \"tags\": [],\n            \"createdAt\": \"2026-01-10T19:42:56.732Z\",\n            \"updatedAt\": \"2026-01-10T19:42:56.732Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 3,\n        \"totalPages\": 1\n    }\n}"
+						},
+						{
+							"name": "fetch by non existing book title",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books?title=non existing book",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									],
+									"query": [
+										{
+											"key": "title",
+											"value": "non existing book"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "86"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 17:11:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 0,\n        \"totalPages\": 0\n    }\n}"
+						},
+						{
+							"name": "filter by impossible price range",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books?minPrice=50&maxPrice=10",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books"
+									],
+									"query": [
+										{
+											"key": "minPrice",
+											"value": "50"
+										},
+										{
+											"key": "maxPrice",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "82"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 22:16:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"maxPrice: Maximum price must be greater than or equal to minimum price\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get book details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"description": "# Get Book Details\n\n## Overview\nThis endpoint retrieves detailed information about a specific book from the book shop API. Use this endpoint when you need to fetch comprehensive details about a book, including its title, author, price, availability, and other metadata.\n\n## Request Details\n\n**Method:** `GET`\n\n**Endpoint:** `/books/{bookId}`\n\n### Path Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `bookId` | string | Yes | The unique identifier of the book to retrieve |\n\n### Headers\n\n| Header | Required | Description |\n|--------|----------|-------------|\n| `Content-Type` | No | Not required for GET requests |\n| `Authorization` | Conditional | May be required depending on API configuration |\n\n### Query Parameters\n\nNo query parameters are required for this endpoint.\n\n## Response Format\n\n### Successful Response (200 OK)\n\nWhen a book is found, the API returns a JSON object containing the book details:\n\n```json\n{\n  \"id\": \"string\",\n  \"title\": \"string\",\n  \"author\": \"string\",\n  \"price\": number,\n  \"isbn\": \"string\",\n  \"availability\": \"string\",\n  \"description\": \"string\"\n}\n```\n\n### Book Not Found (404 Not Found)\n\nWhen the specified book ID does not exist in the system:\n\n```json\n{\n  \"error\": \"Book not found\",\n  \"message\": \"The requested book does not exist\"\n}\n```\n\n## Examples\n\nThis request includes saved examples demonstrating:\n- **Successful Response**: Shows the complete book details returned when a valid book ID is provided\n- **Book Not Found**: Demonstrates the error response when an invalid or non-existent book ID is used\n\n## Authentication\n\nCheck the collection-level authentication settings or consult the API documentation for specific authentication requirements.\n\n## Notes\n\n- Ensure the `bookId` path parameter is a valid identifier\n- The response structure may vary based on the book type or category\n- Consider implementing error handling for network failures and unexpected response formats"
+					},
+					"response": [
+						{
+							"name": "book not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 10 Jan 2026 17:56:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": false,\n    \"error\": \"Book not found\"\n}"
+						},
+						{
+							"name": "successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/books/1193",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"books",
+										"1193"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "352"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 12 Jan 2026 15:54:27 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1193,\n        \"title\": \"The catastrophy\",\n        \"description\": \"A classic novel of the Jazz Age\",\n        \"price\": \"12.99\",\n        \"thumbnail\": \"https://example.com/catastrophy.jpg\",\n        \"author\": \"F. Scott Fitzgerald\",\n        \"category\": \"Fiction\",\n        \"createdAt\": \"2026-01-12T17:50:10.461Z\",\n        \"updatedAt\": \"2026-01-12T17:50:10.461Z\",\n        \"tags\": [\n            \"classic\",\n            \"fiction\",\n            \"romance\",\n            \"1920s\"\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
