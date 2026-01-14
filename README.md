@@ -211,7 +211,7 @@ book_shop/
 │   │   ├── books/       # Public books
 │   │   ├── myBooks/     # User's books
 │   │   └── profile/     # User profile
-│   ├── app.ts           # Express app configuration
+│   ├── app.ts           # Hono app configuration
 │   └── server.ts        # Server entry point
 ├── drizzle/             # Database migrations
 ├── .env                 # Environment variables
@@ -223,11 +223,9 @@ book_shop/
 
 ## Database Schema
 
-here is the database ERD used 
-
+here is the database ERD used
 
 ![WhatsApp Image 2026-01-14 at 8 32 42 AM](https://github.com/user-attachments/assets/33bbde6d-c83f-44cc-a6a1-b3232b2f1f2a)
-
 
 ### Users
 

@@ -13,5 +13,5 @@ profileRoutes.get("/", profileController.getProfile);
 // PUT /profile - Edit current user details
 profileRoutes.put("/", profileController.updateProfile);
 
-// PUT /profile/password - Change current user password
-profileRoutes.put("/changePassword", profileController.changePassword);
+// PATCH /profile/changePassword - Change current user password
+profileRoutes.patch("/changePassword", profileController.changePassword);

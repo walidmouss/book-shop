@@ -35,7 +35,7 @@
 								"register"
 							]
 						},
-						"description": "# User Registration Endpoint\n\n## Overview\nThis endpoint allows new users to register an account in the system. It accepts user credentials and creates a new user account upon successful validation.\n\n## Request Body Parameters\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `username` | string | Yes | The desired username for the new account. Must be unique in the system. |\n| `email` | string | Optional | User's email address. Must be in valid email format if provided. |\n| `password` | string | Yes | The password for the new account. Should meet security requirements. |\n\n## Response Codes\n\n| Status Code | Description |\n|-------------|-------------|\n| `200/201` | **Success** - User account created successfully |\n| `400` | **Bad Request** - Invalid input data (see error cases below) |\n| `409` | **Conflict** - Username or email already exists |\n| `500` | **Server Error** - Internal server error during registration |\n\n## Validation Rules\n\n- **Username**: Required field, cannot be empty\n- **Email**: Must be in valid email format (e.g., user@example.com) if provided\n- **Password**: Required field, should meet minimum security requirements\n\n## Error Cases\n\nThis endpoint has documented examples for common error scenarios:\n\n- **Missing Username**: Returns error when the username field is not provided in the request body\n- **Invalid Email Format**: Returns error when the email field contains an improperly formatted email address\n\n## Example Usage\n\n**Successful Registration:**\n```json\n{\n  \"username\": \"wello\",\n  \"email\": \"wello@test.com\",\n  \"password\": \"wello123\"\n}\n```\n\n**Notes:**\n- Ensure all required fields are included in the request body\n- Passwords should be transmitted over HTTPS in production environments\n- Check existing examples for detailed error response formats"
+						"description": "# User Registration Endpoint\n\n## Overview\n\nThis endpoint allows new users to register an account in the system. It accepts user credentials and creates a new user account upon successful validation.\n\n## Request Body Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `username` | string | Yes | The desired username for the new account. Must be unique in the system. |\n| `email` | string | Optional | User's email address. Must be in valid email format if provided. |\n| `password` | string | Yes | The password for the new account. Should meet security requirements. |\n\n## Response Codes\n\n| Status Code | Description |\n| --- | --- |\n| `200/201` | **Success** - User account created successfully |\n| `400` | **Bad Request** - Invalid input data (see error cases below) |\n| `409` | **Conflict** - Username or email already exists |\n| `500` | **Server Error** - Internal server error during registration |\n\n## Validation Rules\n\n- **Username**: Required field, cannot be empty\n    \n- **Email**: Must be in valid email format (e.g., [user@example.com](https://mailto:user@example.com)) if provided\n    \n- **Password**: Required field, should meet minimum security requirements\n    \n\n## Error Cases\n\nThis endpoint has documented examples for common error scenarios:\n\n- **Missing Username**: Returns error when the username field is not provided in the request body\n    \n- **Invalid Email Format**: Returns error when the email field contains an improperly formatted email address\n    \n\n## Example Usage\n\n**Successful Registration:**\n\n``` json\n{\n  \"username\": \"wello\",\n  \"email\": \"wello@test.com\",\n  \"password\": \"wello123\"\n}\n\n ```\n\n**Notes:**\n\n- Ensure all required fields are included in the request body\n    \n- Check existing examples for detailed error response formats"
 					},
 					"response": [
 						{
@@ -396,7 +396,7 @@
 								"login"
 							]
 						},
-						"description": "# Login Endpoint\n\n## Overview\nThis endpoint authenticates users and initiates a session. Users can log in using either their username or email address along with their password. Upon successful authentication, the server returns authentication credentials that can be used for subsequent API requests.\n\n## Request Details\n\n### HTTP Method\n`POST`\n\n### Endpoint URL\n```\nhttp://localhost:3000/auth/login\n```\n\n### Request Body Parameters\n\nThe request accepts a JSON payload with the following fields:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| `usernameOrEmail` | string | Yes | The user's username or email address used for authentication |\n| `password` | string | Yes | The user's password |\n\n#### Example Request Body\n```json\n{\n  \"usernameOrEmail\": \"walidmoussa00@gmail.com\",\n  \"password\": \"walid123\"\n}\n```\n\n## Response Format\n\n### Successful Authentication (200 OK)\nWhen authentication is successful, the server returns user details and authentication tokens.\n\n**Example Response:**\n```json\n{\n  \"success\": true,\n  \"user\": {\n    \"id\": \"user_id\",\n    \"username\": \"username\",\n    \"email\": \"user@example.com\"\n  },\n  \"token\": \"jwt_token_here\"\n}\n```\n\n### Failed Authentication (401 Unauthorized)\nWhen credentials are invalid, the server returns an error message.\n\n**Example Response:**\n```json\n{\n  \"success\": false,\n  \"message\": \"Invalid username/email or password\"\n}\n```\n\n## Status Codes\n\n| Status Code | Description |\n|-------------|-------------|\n| **200 OK** | Authentication successful. User credentials are valid and a session/token has been created. |\n| **400 Bad Request** | Invalid request format or missing required fields. |\n| **401 Unauthorized** | Authentication failed. The provided username/email or password is incorrect. |\n| **429 Too Many Requests** | Rate limit exceeded. Too many login attempts in a short period. |\n| **500 Internal Server Error** | Server error occurred during authentication process. |\n\n## Authentication Flow\n\n1. **User submits credentials**: The client sends a POST request with `usernameOrEmail` and `password` in the request body.\n2. **Server validates credentials**: The server checks if the provided credentials match a user account in the database.\n3. **Token generation**: If credentials are valid, the server generates an authentication token (typically JWT).\n4. **Response**: The server returns the token and user information to the client.\n5. **Subsequent requests**: The client includes the token in the `Authorization` header for authenticated API calls.\n\n## Saved Examples\n\nThis request includes the following saved examples demonstrating different scenarios:\n\n- **successful login with username**: Demonstrates a successful authentication with valid credentials\n- **wrong username/email**: Demonstrates a failed authentication attempt with invalid credentials\n\n## Usage Notes & Best Practices\n\n### Security Considerations\n- **HTTPS Required**: Always use HTTPS in production to encrypt credentials in transit\n- **Password Requirements**: Ensure passwords meet minimum security requirements (length, complexity)\n- **Rate Limiting**: Implement rate limiting to prevent brute force attacks\n- **Account Lockout**: Consider implementing account lockout after multiple failed attempts\n\n### Implementation Tips\n- Store the returned authentication token securely (e.g., in httpOnly cookies or secure storage)\n- Include the token in subsequent API requests using the `Authorization` header: `Authorization: Bearer <token>`\n- Handle token expiration gracefully by implementing token refresh logic\n- Never log or expose passwords in error messages or logs\n\n### Error Handling\n- Provide generic error messages for failed login attempts to avoid revealing whether a username/email exists\n- Implement proper client-side validation before sending the request\n- Handle network errors and timeouts appropriately\n\n### Testing\n- Test with both username and email formats for the `usernameOrEmail` field\n- Verify behavior with incorrect credentials\n- Test rate limiting and account lockout mechanisms\n- Validate token expiration and refresh flows"
+						"description": "# Login Endpoint\n\n## Overview\n\nThis endpoint authenticates users and initiates a session. Users can log in using either their username or email address along with their password. Upon successful authentication, the server returns authentication credentials that can be used for subsequent API requests.\n\n## Request Details\n\n### HTTP Method\n\n`POST`\n\n### Endpoint URL\n\n```\nhttp://localhost:3000/auth/login\n\n ```\n\n### Request Body Parameters\n\nThe request accepts a JSON payload with the following fields:\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `usernameOrEmail` | string | Yes | The user's username or email address used for authentication |\n| `password` | string | Yes | The user's password |\n\n#### Example Request Body\n\n``` json\n{\n  \"usernameOrEmail\": \"walidmoussa00@gmail.com\",\n  \"password\": \"walid123\"\n}\n\n ```\n\n## Response Format\n\n### Successful Authentication (200 OK)\n\nWhen authentication is successful, the server returns user details and authentication tokens.\n\n**Example Response:**\n\n``` json\n{\n  \"success\": true,\n  \"user\": {\n    \"id\": \"user_id\",\n    \"username\": \"username\",\n    \"email\": \"user@example.com\"\n  },\n  \"token\": \"jwt_token_here\"\n}\n\n ```\n\n### Failed Authentication (401 Unauthorized)\n\nWhen credentials are invalid, the server returns an error message.\n\n**Example Response:**\n\n``` json\n{\n  \"success\": false,\n  \"message\": \"Invalid username/email or password\"\n}\n\n ```\n\n## Status Codes\n\n| Status Code | Description |\n| --- | --- |\n| **200 OK** | Authentication successful. User credentials are valid and a session/token has been created. |\n| **400 Bad Request** | Invalid request format or missing required fields. |\n| **401 Unauthorized** | Authentication failed. The provided username/email or password is incorrect. |\n| **429 Too Many Requests** | Rate limit exceeded. Too many login attempts in a short period. |\n| **500 Internal Server Error** | Server error occurred during authentication process. |\n\n## Authentication Flow\n\n1. **User submits credentials**: The client sends a POST request with `usernameOrEmail` and `password` in the request body.\n    \n2. **Server validates credentials**: The server checks if the provided credentials match a user account in redis.\n    \n3. **Token generation**: If credentials are valid, the server generates an authentication token (typically JWT) and stores the token in redis.\n    \n4. **Response**: The server returns the token and user information to the client.\n    \n5. **Subsequent requests**: The client includes the token in the `Authorization` header for authenticated API calls.\n    \n\n## Saved Examples\n\nThis request includes the following saved examples demonstrating different scenarios:\n\n- **successful login with username**: Demonstrates a successful authentication with valid credentials\n    \n- **wrong username/email**: Demonstrates a failed authentication attempt with invalid credentials\n    \n\n## Usage Notes & Best Practices\n\n### Security Considerations\n\n- **HTTPS Required**: Always use HTTPS in production to encrypt credentials in transit\n    \n- **Password Requirements**: Ensure passwords meet minimum security requirements (length, complexity)\n    \n- **Account Lockout**: Consider implementing account lockout after multiple failed attempts\n    \n\n### Implementation Tips\n\n- Store the returned authentication token securely (e.g., in httpOnly cookies or secure storage)\n    \n- Include the token in subsequent API requests using the `Authorization` header: `Authorization: Bearer`\n    \n- Handle token expiration gracefully by implementing token refresh logic\n    \n- Never log or expose passwords in error messages or logs\n    \n\n### Error Handling\n\n- Provide generic error messages for failed login attempts to avoid revealing whether a username/email exists\n    \n- Implement proper client-side validation before sending the request\n    \n- Handle network errors and timeouts appropriately\n    \n\n### Testing\n\n- Test with both username and email formats for the `usernameOrEmail` field\n    \n- Verify behavior with incorrect credentials\n    \n- Test rate limiting and account lockout mechanisms\n    \n- Validate token expiration and refresh flows"
 					},
 					"response": [
 						{
@@ -958,7 +958,8 @@
 								"auth",
 								"reset-password"
 							]
-						}
+						},
+						"description": "# Reset Password API\n\n## Overview\n\nCompletes the password reset using a One-Time Password (OTP). Validates the OTP and new password and updates the user’s credential.\n\n## Endpoint Details\n\n- Method: POST\n    \n- URL: [http://localhost:3000/auth/reset-password](http://localhost:3000/auth/reset-password)\n    \n- Content-Type: application/json\n    \n- Auth: Not required (uses OTP verification)\n    \n\n## Request Body\n\nJSON fields:\n\n- `email` (string, required) – Registered email address\n    \n- `otp` (string, required) – 6-digit code received via the forgot-password flow\n    \n- `newPassword` (string, required, 6–100 chars)\n    \n- `confirmPassword` (string, required, must match `newPassword`)\n    \n\nExample:\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"NewP@ssw0rd123\",\n  \"confirmPassword\": \"NewP@ssw0rd123\"\n}\n\n ```\n\n## Validation Rules\n\n- `email` must be a valid email format\n    \n- `otp` must be exactly 6 digits (e.g., \"123456\")\n    \n- `newPassword` length must be 6–100 characters\n    \n- `confirmPassword` must equal `newPassword`\n    \n\n## Expected Behavior\n\n- Finds the user by `email`\n    \n- Verifies the `otp` from Redis (10-minute expiry, single-use)\n    \n- Hashes `newPassword` and updates the user’s `password_hash`\n    \n- Invalidates the used OTP\n    \n\n## Responses\n\n- 200 OK – Success\n    \n    ``` json\n    {\n      \"message\": \"Password reset successfully\"\n    }\n    \n     ```\n    \n- 400 Bad Request – Validation error (Zod)\n    \n    ``` json\n    {\n      \"error\": \"confirmPassword: Passwords don't match\"\n    }\n    \n     ```\n    \n- 400 Bad Request – Invalid or expired OTP\n    \n    ``` json\n    {\n      \"error\": \"Invalid or expired OTP\"\n    }\n    \n     ```\n    \n- 404 Not Found – User not found\n    \n    ``` json\n    {\n      \"error\": \"User not found\"\n    }\n    \n     ```\n    \n\n## Example Usage\n\n### Curl\n\n``` bash\ncurl -X POST http://localhost:3000/auth/reset-password \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"email\": \"user@example.com\",\n    \"otp\": \"123456\",\n    \"newPassword\": \"NewP@ssw0rd123\",\n    \"confirmPassword\": \"NewP@ssw0rd123\"\n  }'\n\n ```\n\n### JavaScript (fetch)\n\n``` js\nawait fetch(\"http://localhost:3000/auth/reset-password\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({\n    email: \"user@example.com\",\n    otp: \"123456\",\n    newPassword: \"NewP@ssw0rd123\",\n    confirmPassword: \"NewP@ssw0rd123\"\n  })\n});\n\n ```\n\n## Notes\n\n- Flow: Call `POST /auth/forgot-password` first to receive the OTP, then use this endpoint to reset the password.\n    \n- Security: OTPs expire after 10 minutes and are single-use; upon successful reset, the OTP is invalidated.\n    \n- Privacy: Unlike `forgot-password` which is privacy-preserving, this endpoint returns `User not found` if the email is not registered."
 					},
 					"response": [
 						{
@@ -1343,7 +1344,7 @@
 								"updateProfile"
 							]
 						},
-						"description": "# Update User Profile\n\n## Overview\nThis endpoint allows you to update user profile information including username and email address. The endpoint accepts a JSON payload with the fields to be updated.\n\n## Endpoint Details\n- **Method:** `PUT`\n- **URL:** `http://localhost:3000/updateProfile`\n\n## Request Body\nThe request body should be in JSON format with the following fields:\n\n```json\n{\n  \"username\": \"user\",\n  \"email\": \"user@test.com\"\n}\n```\n\n### Fields\n- `username` (string): The new username for the user profile\n- `email` (string): The new email address for the user profile\n\n## Expected Behavior\n\n### Successful Update\nWhen valid username and email values are provided, the endpoint will successfully update the user's profile information. See the \"successful update username, email\" example for reference.\n\n### Password Updates Not Supported\n**Important:** This endpoint does not support password updates. Any attempts to update the password through this endpoint will not be processed. See the \"doesn't update password\" example for reference.\n\n## Usage Notes\n- Ensure the request body is properly formatted as JSON\n- Both username and email can be updated in a single request\n- For password changes, use a different endpoint dedicated to password management"
+						"description": "# Update User Profile\n\n## Overview\n\nThis endpoint allows you to update user profile information including username and email address. The endpoint accepts a JSON payload with the fields to be updated.\n\n## Endpoint Details\n\n- **Method:** `PUT`\n    \n- **URL:** `http://localhost:3000/updateProfile`\n    \n\n## Request Body\n\nThe request body should be in JSON format with the following fields:\n\n``` json\n{\n  \"username\": \"user\",\n  \"email\": \"user@test.com\"\n}\n\n ```\n\n### Fields\n\n- `username` (string): The new username for the user profile\n    \n- `email` (string): The new email address for the user profile\n    \n\n## Expected Behavior\n\n### Successful Update\n\nWhen valid username and email values are provided, the endpoint will successfully update the user's profile information. See the \"successful update username, email\" example for reference.\n\n### Password Updates Not Supported\n\n**Important:** This endpoint does not support password updates. Any attempts to update the password through this endpoint will not be processed. See the \"doesn't update password\" example for reference.\n\n## Usage Notes\n\n- Ensure the request body is properly formatted as JSON\n    \n- Both username and email can be updated in a single request\n    \n- For password changes, use a different endpoint dedicated to password management"
 					},
 					"response": [
 						{
@@ -1626,16 +1627,16 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcwMSwibm9uY2UiOiIwLmQybzI4eDlqZzh3IiwiaWF0IjoxNzY3OTA0MzQxLCJleHAiOjE3Njg1MDkxNDF9.epf7RYDwR4gchC_hYKJjn6ZIpF7fzNHTUw87HwxJyMc",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3ODAsIm5vbmNlIjoiMC41ZW1vcXd6OGd6MyIsImlhdCI6MTc2ODM3NjUyMywiZXhwIjoxNzY4OTgxMzIzfQ.bjOgDtqofwunrJtvB90PvkYqV-PNDpo9xhwnsRTleDM",
 									"type": "string"
 								}
 							]
 						},
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"currentPassword\" : \"passwor123\",\r\n    \"newPassword\" : \"password123\",\r\n    \"confirmPassword\" : \"password123\"\r\n}\r\n",
+							"raw": "{\r\n    \"currentPassword\" : \"walid123\",\r\n    \"newPassword\" : \"password123\",\r\n    \"confirmPassword\" : \"password123\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1653,13 +1654,14 @@
 								"profile",
 								"changePassword"
 							]
-						}
+						},
+						"description": "# Change Password API\n\n## Overview\n\nUpdates the authenticated user’s password. This endpoint verifies the current password, validates the new password, and persists the change.\n\n## Endpoint Details\n\n- Method: PATCH\n    \n- URL: [http://localhost:3000/profile/changePassword](http://localhost:3000/profile/changePassword)\n    \n- Auth: Bearer JWT required (`Authorization: Bearer` )\n    \n\n## Request Body\n\nJSON fields:\n\n- `currentPassword` (string, required)\n    \n- `newPassword` (string, required, 6–100 chars)\n    \n- `confirmPassword` (string, required, must match `newPassword`)\n    \n\nExample:\n\n``` json\n{\n  \"currentPassword\": \"oldPass123\",\n  \"newPassword\": \"newPass456\",\n  \"confirmPassword\": \"newPass456\"\n}\n\n ```\n\n## Validation Rules\n\n- `currentPassword` must be provided and match the existing credential\n    \n- `newPassword` must be 6–100 characters\n    \n- `confirmPassword` must equal `newPassword`\n    \n\n## Expected Behavior\n\n- Verifies `currentPassword` against the stored hash\n    \n- Hashes `newPassword` and updates `password_hash`\n    \n- Only the password is modified (partial update)\n    \n\n## Responses\n\n- 200 OK – Success\n    \n    ``` json\n      {\n        \"success\": true,\n        \"message\": \"Password changed successfully\"\n      }\n    \n     ```\n    \n- 400 Bad Request – Validation error (Zod)\n    \n    ``` json\n      {\n        \"error\": \"confirmPassword: Passwords don't match\"\n      }\n    \n     ```\n    \n- 400 Bad Request – Incorrect current password\n    \n    ``` json\n      {\n        \"success\": false,\n        \"error\": \"Current password is incorrect\"\n      }\n    \n     ```\n    \n- 404 Not Found – User not found\n    \n    ``` json\n      {\n        \"success\": false,\n        \"error\": \"User not found\"\n      }\n    \n     ```\n    \n- 401 Unauthorized – Missing/invalid token\n    \n    ``` json\n      {\n        \"success\": false,\n        \"error\": \"Unauthorized\"\n      }\n    \n     ```\n    \n\n## Usage Notes\n\n- Include the JWT in the `Authorization` header on every request\n    \n- This endpoint only changes the password; username/email remain unchanged\n    \n- Use `PATCH /profile` for profile field changes (username/email)\n    \n\n## Examples\n\n### JavaScript (fetch)\n\n``` js\nawait fetch(\"http://localhost:3000/profile/changePassword\", {\n  method: \"PATCH\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer <your-jwt-token>\"\n  },\n  body: JSON.stringify({\n    currentPassword: \"oldPass123\",\n    newPassword: \"newPass456\",\n    confirmPassword: \"newPass456\"\n  })\n});\n\n ```"
 					},
 					"response": [
 						{
 							"name": "successful change password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1714,7 +1716,7 @@
 						{
 							"name": "wrong current password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1769,7 +1771,7 @@
 						{
 							"name": "wrong confirm password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1824,7 +1826,7 @@
 						{
 							"name": "missing all data",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1879,7 +1881,7 @@
 						{
 							"name": "missing confirm password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1934,7 +1936,7 @@
 						{
 							"name": "missing new password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
@@ -1989,7 +1991,7 @@
 						{
 							"name": "missing current password",
 							"originalRequest": {
-								"method": "PUT",
+								"method": "PATCH",
 								"header": [],
 								"body": {
 									"mode": "raw",
