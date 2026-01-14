@@ -223,6 +223,12 @@ book_shop/
 
 ## Database Schema
 
+here is the database ERD used 
+
+
+![WhatsApp Image 2026-01-14 at 8 32 42 AM](https://github.com/user-attachments/assets/33bbde6d-c83f-44cc-a6a1-b3232b2f1f2a)
+
+
 ### Users
 
 - id, username, email, password, createdAt, updatedAt
